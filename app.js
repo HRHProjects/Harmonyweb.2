@@ -388,6 +388,29 @@
     });
   }
 
+  function highlightActiveNav() {
+    const links = qsa("header nav a, #mobileNav a");
+    if (!links.length) return;
+
+    const path = window.location.pathname;
+    links.forEach(link => {
+      const href = link.getAttribute("href") || "";
+      const file = href.split("/").pop();
+      const isActive =
+        path.endsWith(href) ||
+        path.endsWith(file) ||
+        (file === "index.html" && (path === "/" || path.endsWith("/")));
+
+      if (isActive) {
+        link.classList.add("is-active");
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.classList.remove("is-active");
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
+
   function escapeHtml(s) {
     return String(s ?? "")
       .replace(/&/g, "&amp;")
@@ -403,6 +426,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     injectCommon();
     setupMobileMenu();
+    highlightActiveNav();
     renderPricingTable();
     renderBookingServiceOptions();
     setupBookingForm();

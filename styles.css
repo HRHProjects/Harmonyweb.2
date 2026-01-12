@@ -1,9 +1,58 @@
 /* assets/styles.css */
-:root { color-scheme: light; }
+:root {
+  color-scheme: light;
+  --brand-600: #0f766e;
+  --brand-500: #0ea5e9;
+  --ink: #0f172a;
+  --surface: #f8fafc;
+}
 html { scroll-behavior: smooth; }
-body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--ink);
+  background: radial-gradient(120% 120% at 10% 10%, rgba(14,165,233,0.10), transparent),
+              radial-gradient(120% 120% at 90% 0%, rgba(15,118,110,0.12), transparent),
+              #f8fafc;
+}
 a { text-underline-offset: 3px; }
+
+/* Header navigation styling */
+header nav a,
+#mobileNav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  transition: transform 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+header nav a:hover,
+#mobileNav a:hover {
+  border-color: var(--brand-600);
+  color: var(--brand-600);
+  box-shadow: 0 16px 35px rgba(14, 165, 233, 0.22);
+  transform: translateY(-1px);
+}
+header nav a.is-active,
+#mobileNav a.is-active {
+  border-color: var(--brand-600);
+  color: var(--brand-600);
+  background: linear-gradient(145deg, rgba(15,118,110,0.12), rgba(14,165,233,0.14));
+}
+
+/* Light animation on page sections */
+main section {
+  animation: fadeInUp 0.5s ease both;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 #map { height: 360px; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  main section { animation: none; }
 }
