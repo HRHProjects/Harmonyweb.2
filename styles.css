@@ -1,0 +1,9 @@
+/* assets/styles.css */
+:root { color-scheme: light; }
+html { scroll-behavior: smooth; }
+body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+a { text-underline-offset: 3px; }
+#map { height: 360px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
