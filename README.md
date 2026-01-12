@@ -10,10 +10,10 @@ Pages:
 - terms.html (Terms of Service — legal name used, includes not-a-lawyer/not-an-immigration-consultant text)
 
 ## Contact details (single source of truth)
-Edit: `assets/config.js`
+Edit: `config.js`
 
 ## Appointment request (backend-ready)
-The booking and contact forms POST JSON to endpoints configured in `assets/config.js`:
+The booking and contact forms POST JSON to endpoints configured in `config.js`:
 - `BOOKING_ENDPOINT`
 - `CONTACT_ENDPOINT`
 

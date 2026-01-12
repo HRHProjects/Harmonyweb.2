@@ -1,4 +1,4 @@
-// assets/config.js
+// config.js
 // Central configuration so contact details are defined once.
 // Update BOOKING_ENDPOINT when your backend endpoint is ready.
 

@@ -1,4 +1,4 @@
-// assets/app.js
+// app.js
 (function () {
   const cfg = window.HRH_CONFIG || {};
 
