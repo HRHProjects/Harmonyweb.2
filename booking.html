@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Booking | Harmony Resource Hub</title>
+  <meta name="description" content="Request an appointment with Harmony Resource Hub. Select a service, preferred time, and contact method. Do not enter sensitive details." />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a'
+            }
+          },
+          boxShadow: {
+            soft: '0 12px 34px rgba(2, 6, 23, 0.10)'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-white focus:text-slate-900 focus:shadow-soft focus:px-4 focus:py-2 focus:rounded-lg">Skip to content</a>
+  <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="flex items-center justify-between py-3">
+        <a href="index.html" class="flex items-center gap-3">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-600 to-sky-500 text-white shadow-soft">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5">
+              <path fill="currentColor" d="M7 17c4-4 7-1 11-5a1 1 0 1 1 1.4 1.4c-4.6 4.6-8.3 1.2-13.4 6.3A1 1 0 1 1 5.6 18.3C6.2 17.7 6.6 17.3 7 17Z"/>
+              <path fill="currentColor" d="M14.6 4.6a1 1 0 0 1 1.4 0l3.4 3.4a1 1 0 0 1 0 1.4l-1.7 1.7-4.8-4.8 1.7-1.7Z"/>
+            </svg>
+          </span>
+          <div class="leading-tight">
+            <div class="text-sm font-semibold tracking-tight" data-brand-name>Harmony Resource Hub</div>
+            <div class="text-xs text-slate-500">Owned & operated by social workers</div>
+          </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-2 text-sm">
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="index.html">Home</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="services.html">Services</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="booking.html">Booking</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="contact.html">Contact</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="signin.html">Sign in</a>
+        </nav>
+
+        <div class="hidden lg:flex items-center gap-3">
+          <a class="text-sm font-medium text-slate-700 hover:underline" data-phone-tel href="#">
+            <span class="hidden xl:inline">Call </span><span data-phone-display>780-531-4294</span>
+          </a>
+          <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="booking.html">
+            Request an appointment
+          </a>
+        </div>
+
+        <button type="button" class="lg:hidden inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700"
+                data-mobile-menu-button aria-expanded="false" aria-controls="mobileNav">
+          <span class="sr-only">Open menu</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5">
+            <path fill="currentColor" d="M4 6h16v2H4zM4 11h16v2H4zM4 16h16v2H4z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="mobileNav" class="hidden pb-4" data-mobile-menu-panel>
+        <div class="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-soft">
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="index.html">Home</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="services.html">Services</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="booking.html">Booking</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="contact.html">Contact</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="signin.html">Sign in</a>
+          <a class="rounded-xl bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" href="booking.html">Request an appointment</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-14 pb-10">
+  <div class="max-w-3xl">
+    <h1 class="text-3xl font-semibold tracking-tight">Request an appointment</h1>
+    <p class="mt-3 text-slate-600">
+      Select a service and a preferred time. Appointment requests are reviewed during business hours.
+    </p>
+    <div class="mt-4 rounded-2xl border border-brand-200 bg-brand-50 p-4 text-sm text-brand-900">
+      Do not enter sensitive details (e.g., SIN, passport number, banking info). Only describe what you need at a high level.
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-6xl px-4 sm:px-6 pb-16">
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-2 rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
+      <form id="bookingForm" class="grid gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700" for="serviceSelect">Service</label>
+          <select id="serviceSelect" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required></select>
+        </div>
+
+        <div id="otherServiceWrap" class="hidden">
+          <label class="block text-sm font-medium text-slate-700" for="otherService">Other service (describe)</label>
+          <input id="otherService" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" placeholder="Describe the service you need" />
+        </div>
+
+        <fieldset class="rounded-2xl border border-slate-200 p-4">
+          <legend class="px-2 text-sm font-medium text-slate-700">Appointment type</legend>
+          <div class="mt-2 grid gap-2 sm:grid-cols-2 text-sm">
+            <label class="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 cursor-pointer">
+              <input type="radio" name="appointmentType" value="Virtual (Alberta-wide)" required class="mt-1">
+              <span>
+                <span class="font-medium text-slate-900">Virtual (Alberta-wide)</span><br>
+                <span class="text-slate-600">Phone / online appointment</span>
+              </span>
+            </label>
+            <label class="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 cursor-pointer">
+              <input type="radio" name="appointmentType" value="In-person (Fort McMurray residents only)" required class="mt-1">
+              <span>
+                <span class="font-medium text-slate-900">In-person</span><br>
+                <span class="text-slate-600">Fort McMurray residents only</span>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700" for="preferredDateTime">Preferred date & time</label>
+          <input id="preferredDateTime" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"
+                 placeholder="Select date and time" required />
+          <div class="mt-2 text-xs text-slate-500">
+            Hours: Mon–Fri 9:30 AM–7:00 PM (closed 12:00–1:00), Sat 10:00 AM–4:00 PM (closed 12:00–1:00), Sun closed.
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="block text-sm font-medium text-slate-700" for="clientName">Your name</label>
+            <input id="clientName" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700" for="preferredContact">Preferred contact</label>
+            <select id="preferredContact" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required>
+              <option value="" selected disabled>Select</option>
+              <option value="Email">Email</option>
+              <option value="Phone">Phone</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="block text-sm font-medium text-slate-700" for="clientEmail">Email</label>
+            <input id="clientEmail" type="email" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700" for="clientPhone">Phone (optional)</label>
+            <input id="clientPhone" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700" for="serviceMessage">Message</label>
+          <textarea id="serviceMessage" rows="5" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" placeholder="Briefly describe what you need. Do not include sensitive details." required></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" type="submit">
+            Submit request
+          </button>
+          <div class="text-sm text-slate-600">
+            This form will send via your backend endpoint if configured, otherwise it opens your email app.
+          </div>
+        </div>
+
+        <div id="bookingStatus" class="mt-1 text-sm text-slate-600"></div>
+      </form>
+    </div>
+
+    <aside class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
+      <div class="text-sm font-semibold">What happens next</div>
+      <ol class="mt-4 space-y-3 text-sm text-slate-700">
+        <li class="flex gap-3"><span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white text-xs">1</span>
+          <div>We review your request and confirm availability.</div></li>
+        <li class="flex gap-3"><span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white text-xs">2</span>
+          <div>We send a checklist of what to bring/upload.</div></li>
+        <li class="flex gap-3"><span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white text-xs">3</span>
+          <div>Service is delivered virtually (Alberta-wide) or in person (Fort McMurray residents only).</div></li>
+      </ol>
+
+      <div class="mt-8 rounded-2xl bg-slate-50 p-5 border border-slate-200">
+        <div class="text-sm font-semibold">Need to contact us directly?</div>
+        <div class="mt-2 text-sm text-slate-700">
+          Email: <a class="hover:underline" data-email-mailto href="#"><span data-email></span></a><br>
+          Phone: <a class="hover:underline" data-phone-tel href="#"><span data-phone-display></span></a>
+        </div>
+      </div>
+
+      <div class="mt-6 text-xs text-slate-500">
+        By submitting a request, you agree to the Terms of Service.
+      </div>
+    </aside>
+  </div>
+</section>
+  </main>
+  <footer class="border-t border-slate-200 bg-white">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+      <div class="grid gap-8 md:grid-cols-3">
+        <div>
+          <div class="text-sm font-semibold" data-brand-name>Harmony Resource Hub</div>
+          <div class="mt-2 text-sm text-slate-600">
+            Alberta-wide by phone/virtual. Walk-in support available only to Fort McMurray residents.
+          </div>
+        </div>
+        <div>
+          <div class="text-sm font-semibold">Contact</div>
+          <div class="mt-2 text-sm text-slate-600">
+            <a class="hover:underline" data-email-mailto href="#"><span data-email>admin@harmonyresourcehub.ca</span></a><br>
+            <a class="hover:underline" data-phone-tel href="#"><span data-phone-display>780-531-4294</span></a><br>
+            <span data-address-line1>9914 Morrison St. #15</span><br>
+            <span data-address-line2>Fort McMurray, AB T9H 4A4</span>
+          </div>
+        </div>
+        <div>
+          <div class="text-sm font-semibold">Legal</div>
+          <div class="mt-2 text-sm text-slate-600 space-y-1">
+            <div><a class="hover:underline" href="privacy.html">Privacy Policy</a></div>
+            <div><a class="hover:underline" href="terms.html">Terms of Service</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 text-xs text-slate-500">
+        © <span data-year>2026</span> <span data-brand-name>Harmony Resource Hub</span>.
+      </div>
+    </div>
+  </footer>
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

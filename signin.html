@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in | Harmony Resource Hub</title>
+  <meta name="description" content="Sign in page for future client accounts and online services." />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a'
+            }
+          },
+          boxShadow: {
+            soft: '0 12px 34px rgba(2, 6, 23, 0.10)'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <meta name="theme-color" content="#0f766e" />
+  
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-white focus:text-slate-900 focus:shadow-soft focus:px-4 focus:py-2 focus:rounded-lg">Skip to content</a>
+  <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="flex items-center justify-between py-3">
+        <a href="index.html" class="flex items-center gap-3">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-600 to-sky-500 text-white shadow-soft">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5">
+              <path fill="currentColor" d="M7 17c4-4 7-1 11-5a1 1 0 1 1 1.4 1.4c-4.6 4.6-8.3 1.2-13.4 6.3A1 1 0 1 1 5.6 18.3C6.2 17.7 6.6 17.3 7 17Z"/>
+              <path fill="currentColor" d="M14.6 4.6a1 1 0 0 1 1.4 0l3.4 3.4a1 1 0 0 1 0 1.4l-1.7 1.7-4.8-4.8 1.7-1.7Z"/>
+            </svg>
+          </span>
+          <div class="leading-tight">
+            <div class="text-sm font-semibold tracking-tight" data-brand-name>Harmony Resource Hub</div>
+            <div class="text-xs text-slate-500">Owned & operated by social workers</div>
+          </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-2 text-sm">
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="index.html">Home</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="services.html">Services</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="booking.html">Booking</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="contact.html">Contact</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="signin.html">Sign in</a>
+        </nav>
+
+        <div class="hidden lg:flex items-center gap-3">
+          <a class="text-sm font-medium text-slate-700 hover:underline" data-phone-tel href="#">
+            <span class="hidden xl:inline">Call </span><span data-phone-display>780-531-4294</span>
+          </a>
+          <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="booking.html">
+            Request an appointment
+          </a>
+        </div>
+
+        <button type="button" class="lg:hidden inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700"
+                data-mobile-menu-button aria-expanded="false" aria-controls="mobileNav">
+          <span class="sr-only">Open menu</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5">
+            <path fill="currentColor" d="M4 6h16v2H4zM4 11h16v2H4zM4 16h16v2H4z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="mobileNav" class="hidden pb-4" data-mobile-menu-panel>
+        <div class="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-soft">
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="index.html">Home</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="services.html">Services</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="booking.html">Booking</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="contact.html">Contact</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="signin.html">Sign in</a>
+          <a class="rounded-xl bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" href="booking.html">Request an appointment</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-14 pb-16">
+  <div class="grid gap-8 lg:grid-cols-2 lg:items-center">
+    <div class="max-w-xl">
+      <h1 class="text-3xl font-semibold tracking-tight">Sign in</h1>
+      <p class="mt-3 text-slate-600">
+        Account and payment features will be added later. This page is set up so you can connect it to your authentication endpoint when ready.
+      </p>
+      <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="text-sm font-semibold">Planned features</div>
+        <ul class="mt-2 list-disc pl-5 text-sm text-slate-700 space-y-1">
+          <li>Client account</li>
+          <li>Online booking management</li>
+          <li>Secure document upload portal</li>
+          <li>Payments and invoices</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
+      <form id="signinForm" class="grid gap-4" onsubmit="event.preventDefault(); alert('Sign-in endpoint not connected yet.');">
+        <div>
+          <label class="block text-sm font-medium text-slate-700" for="sEmail">Email</label>
+          <input id="sEmail" type="email" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700" for="sPassword">Password</label>
+          <input id="sPassword" type="password" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
+        </div>
+        <button class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" type="submit">
+          Sign in
+        </button>
+        <div class="text-xs text-slate-500">
+          Future integration point: POST to your auth endpoint, store session token, then redirect to client dashboard.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+  </main>
+  <footer class="border-t border-slate-200 bg-white">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+      <div class="grid gap-8 md:grid-cols-3">
+        <div>
+          <div class="text-sm font-semibold" data-brand-name>Harmony Resource Hub</div>
+          <div class="mt-2 text-sm text-slate-600">
+            Alberta-wide by phone/virtual. Walk-in support available only to Fort McMurray residents.
+          </div>
+        </div>
+        <div>
+          <div class="text-sm font-semibold">Contact</div>
+          <div class="mt-2 text-sm text-slate-600">
+            <a class="hover:underline" data-email-mailto href="#"><span data-email>admin@harmonyresourcehub.ca</span></a><br>
+            <a class="hover:underline" data-phone-tel href="#"><span data-phone-display>780-531-4294</span></a><br>
+            <span data-address-line1>9914 Morrison St. #15</span><br>
+            <span data-address-line2>Fort McMurray, AB T9H 4A4</span>
+          </div>
+        </div>
+        <div>
+          <div class="text-sm font-semibold">Legal</div>
+          <div class="mt-2 text-sm text-slate-600 space-y-1">
+            <div><a class="hover:underline" href="privacy.html">Privacy Policy</a></div>
+            <div><a class="hover:underline" href="terms.html">Terms of Service</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 text-xs text-slate-500">
+        © <span data-year>2026</span> <span data-brand-name>Harmony Resource Hub</span>.
+      </div>
+    </div>
+  </footer>
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
