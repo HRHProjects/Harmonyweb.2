@@ -16,6 +16,36 @@ body {
 }
 a { text-underline-offset: 3px; }
 
+/* Logo sizing: larger and responsive for better visibility */
+.logo-badge {
+  width: 56px;
+  height: 56px;
+}
+.logo-img {
+  width: 44px;
+  height: 44px;
+}
+@media (min-width: 640px) {
+  .logo-badge {
+    width: 64px;
+    height: 64px;
+  }
+  .logo-img {
+    width: 52px;
+    height: 52px;
+  }
+}
+@media (min-width: 1024px) {
+  .logo-badge {
+    width: 72px;
+    height: 72px;
+  }
+  .logo-img {
+    width: 58px;
+    height: 58px;
+  }
+}
+
 /* Header navigation styling */
 header nav a,
 #mobileNav a {
