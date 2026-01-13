@@ -20,6 +20,20 @@ The booking and contact forms POST JSON to endpoints configured in `config.js`:
 If the POST fails (or you haven't connected endpoints yet), the forms fall back to opening the user's email app with a pre-filled draft to:
 `admin@harmonyresourcehub.ca`
 
+## Vercel + Resend (email delivery)
+Serverless functions are located at:
+- `api/appointments.js`
+- `api/contact.js`
+
+Set these Environment Variables in Vercel (Project -> Settings -> Environment Variables):
+- `RESEND_API_KEY` (required)
+- `HRH_FROM_EMAIL` (e.g. `Harmony Resource Hub <no-reply@harmonyresourcehub.ca>`)
+- `HRH_TO_EMAIL` (optional, defaults to admin@harmonyresourcehub.ca)
+- `HRH_ALLOWED_ORIGINS` (optional, comma-separated origins)
+- `HRH_SUBJECT_PREFIX` (optional)
+
+If the site is hosted on GitHub Pages and the API is on Vercel, set `API_BASE_URL` in `config.js` to your Vercel deployment URL (example: `https://your-project.vercel.app`).
+
 ## Open-source libraries (CDN)
 - Tailwind CSS (UI)
 - Leaflet + OpenStreetMap tiles (map)

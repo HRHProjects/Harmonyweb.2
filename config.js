@@ -15,7 +15,8 @@ window.HRH_CONFIG = {
   mapLat: 56.7286626,
   mapLng: -111.3843884,
 
-  // Backend endpoints (leave empty to use mailto fallback)
+  // Backend endpoints (leave empty if the site and API are on the same domain).
+  // If the site is on GitHub Pages and the API is on Vercel, set API_BASE_URL to your Vercel URL.
   API_BASE_URL: "",
   BOOKING_ENDPOINT: "/api/appointments",      // Example: "https://api.yourdomain.ca/appointments"
   CONTACT_ENDPOINT: "/api/contact"            // Example: "https://api.yourdomain.ca/contact"
