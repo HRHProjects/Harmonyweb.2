@@ -418,6 +418,31 @@
     });
   }
 
+  function setupRotatingText() {
+    const elements = qsa("[data-rotate-text]");
+    if (!elements.length) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    elements.forEach(el => {
+      const raw = el.getAttribute("data-rotate-items") || "";
+      const items = raw.split("|").map(s => s.trim()).filter(Boolean);
+      if (items.length < 2) return;
+
+      const valueEl = el.querySelector("[data-rotate-value]") || el;
+      let idx = 0;
+
+      setInterval(() => {
+        idx = (idx + 1) % items.length;
+        valueEl.classList.add("is-fading");
+        setTimeout(() => {
+          valueEl.textContent = items[idx];
+          valueEl.classList.remove("is-fading");
+        }, 300);
+      }, 3800);
+    });
+  }
+
   function setupAuthTabs() {
     const tabs = qsa("[data-auth-tab]");
     const panels = qsa("[data-auth-panel]");
@@ -792,6 +817,7 @@
     renderBookingServiceOptions();
     setupBookingForm();
     setupContactForm();
+    setupRotatingText();
     setupAuthTabs();
     setupSignInForm();
     setupRegisterForm();
