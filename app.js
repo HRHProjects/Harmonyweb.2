@@ -12,6 +12,13 @@
     qsa(sel).forEach(el => { el.setAttribute("href", value); });
   }
 
+  function getApiUrl(path) {
+    if (!path) return "";
+    if (/^https?:\/\//i.test(path)) return path;
+    const base = cfg.API_BASE_URL ? cfg.API_BASE_URL.replace(/\/$/, "") : "";
+    return base + path;
+  }
+
   function injectCommon() {
     // Brand/Legal names
     setText("[data-brand-name]", cfg.brandName || "");
@@ -411,6 +418,254 @@
     });
   }
 
+  function setupSignInForm() {
+    const form = qs("#signinForm");
+    if (!form) return;
+
+    const status = qs("#signinStatus");
+    const submitBtn = qs("button[type='submit']", form);
+
+    function setStatus(msg, kind="info") {
+      if (!status) return;
+      status.textContent = msg;
+      status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
+        kind === "error" ? "text-rose-700" : "text-slate-600");
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = (qs("#sEmail")?.value || "").trim();
+      const password = (qs("#sPassword")?.value || "").trim();
+
+      if (!email || !password) {
+        setStatus("Please enter your email and password.", "error");
+        return;
+      }
+
+      if (!cfg.AUTH_ENDPOINT) {
+        setStatus("Sign-in is not available yet. Please contact us for help.", "error");
+        return;
+      }
+
+      const postUrl = getApiUrl(cfg.AUTH_ENDPOINT);
+      if (!postUrl) {
+        setStatus("Sign-in is not available yet. Please contact us for help.", "error");
+        return;
+      }
+
+      setStatus("Signing in...");
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const res = await fetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Sign-in failed.");
+
+        const token = data.token || data.session || data.jwt || "";
+        if (token) localStorage.setItem("hrh_auth_token", token);
+        localStorage.setItem("hrh_auth_session", "true");
+        localStorage.setItem("hrh_auth_email", email);
+
+        const target = cfg.PORTAL_URL || "portal/";
+        window.location.href = target;
+      } catch (err) {
+        setStatus(err.message || "Sign-in failed.", "error");
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  }
+
+  function setupPortalApp() {
+    const root = qs("[data-portal]");
+    if (!root) return;
+
+    const signinUrl = cfg.PORTAL_SIGNIN_URL || "../signin.html";
+    const gate = qs("#portalAuthGate");
+    const main = qs("#portalMain");
+    const email = localStorage.getItem("hrh_auth_email") || "";
+    const hasSession = Boolean(localStorage.getItem("hrh_auth_session") || localStorage.getItem("hrh_auth_token"));
+
+    if (hasSession) {
+      gate?.classList.add("hidden");
+      main?.classList.remove("hidden");
+      const emailEl = qs("[data-portal-email]");
+      if (emailEl && email) emailEl.textContent = email;
+    } else {
+      gate?.classList.remove("hidden");
+      main?.classList.add("hidden");
+    }
+
+    qs("[data-portal-logout]")?.addEventListener("click", () => {
+      localStorage.removeItem("hrh_auth_token");
+      localStorage.removeItem("hrh_auth_session");
+      localStorage.removeItem("hrh_auth_email");
+      window.location.href = signinUrl;
+    });
+
+    const fileInput = qs("#portalFileInput");
+    const fileList = qs("#portalFileList");
+    const dropZone = qs("#portalDropZone");
+    const fileBtn = qs("[data-portal-file-button]");
+
+    function renderFiles(files) {
+      if (!fileList) return;
+      if (!files || !files.length) {
+        fileList.innerHTML = "<li>No files selected yet.</li>";
+        return;
+      }
+      fileList.innerHTML = files.map(f => (
+        `<li class=\"flex items-center justify-between border-b border-slate-200/60 py-2\">
+          <span>${escapeHtml(f.name)}</span>
+          <span class=\"text-xs text-slate-500\">${Math.ceil(f.size / 1024)} KB</span>
+        </li>`
+      )).join("");
+    }
+
+    if (fileInput) {
+      renderFiles([]);
+      fileInput.addEventListener("change", () => renderFiles(Array.from(fileInput.files || [])));
+    }
+
+    if (fileBtn && fileInput) {
+      fileBtn.addEventListener("click", () => fileInput.click());
+    }
+
+    if (dropZone) {
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("is-dragging");
+      });
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("is-dragging");
+      });
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("is-dragging");
+        const files = Array.from(e.dataTransfer?.files || []);
+        renderFiles(files);
+      });
+    }
+  }
+
+  function setupChatWidget() {
+    if (cfg.CHATBOT_ENABLED === false) return;
+    if (qs("#chatWidget")) return;
+
+    const root = document.createElement("div");
+    root.id = "chatWidget";
+    root.innerHTML = `
+      <button class="chat-launcher" type="button" data-chat-toggle aria-expanded="false">
+        <span class="sr-only">Open help</span>
+        <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5">
+          <path fill="currentColor" d="M12 2a9 9 0 0 0-9 9c0 2.7 1.2 5.2 3.2 6.9L6 22l4.1-1.5c.6.1 1.2.2 1.9.2a9 9 0 0 0 0-18Zm0 4.8a1 1 0 0 1 1 1v.2c0 .6-.3 1-.8 1.4-.7.5-1.2 1-1.2 2v.4h-1.5v-.5c0-1.3.7-2.1 1.4-2.6.4-.3.6-.5.6-.8 0-.4-.3-.7-.7-.7-.5 0-.9.4-1 .9l-1.5-.3c.2-1.2 1.2-2 2.7-2Zm-.2 8.6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/>
+        </svg>
+      </button>
+      <div class="chat-panel hidden" data-chat-panel>
+        <div class="chat-header">
+          <div>
+            <div class="text-sm font-semibold">${escapeHtml(cfg.CHATBOT_NAME || "HRH Assistant")}</div>
+            <div class="text-xs text-slate-500">Website help</div>
+          </div>
+          <button type="button" class="text-slate-500 hover:text-slate-700" data-chat-close aria-label="Close chat">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4">
+              <path fill="currentColor" d="M6.4 5l12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm12.6 1.4L6.4 19 5 17.6 17.6 5 19 6.4Z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="chat-body" data-chat-body></div>
+        <form class="chat-form" data-chat-form>
+          <input class="chat-input" type="text" placeholder="Ask about services, hours, booking..." aria-label="Chat message" />
+          <button class="chat-send" type="submit">Send</button>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(root);
+
+    const toggleBtn = qs("[data-chat-toggle]", root);
+    const panel = qs("[data-chat-panel]", root);
+    const closeBtn = qs("[data-chat-close]", root);
+    const form = qs("[data-chat-form]", root);
+    const input = qs(".chat-input", root);
+    const body = qs("[data-chat-body]", root);
+
+    function addMsg(text, role="bot") {
+      if (!body) return;
+      const div = document.createElement("div");
+      div.className = role === "user" ? "chat-msg chat-user" : "chat-msg chat-bot";
+      div.textContent = text;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    const kb = [
+      {
+        keys: ["hours", "open", "close", "time"],
+        answer: "Hours: Mon-Fri 9:30 AM-7:00 PM (closed 12:00-1:00), Sat 10:00 AM-4:00 PM (closed 12:00-1:00), Sun closed."
+      },
+      {
+        keys: ["book", "appointment", "schedule"],
+        answer: "Use the Booking page to request an appointment. We will confirm availability and follow up by email or phone."
+      },
+      {
+        keys: ["contact", "phone", "email", "address"],
+        answer: "You can reach us at " + (cfg.phoneDisplay || "our phone") + " or " + (cfg.email || "our email") + ". Address: " + (cfg.addressLine1 || "") + " " + (cfg.addressLine2 || "") + "."
+      },
+      {
+        keys: ["services", "help", "support"],
+        answer: "We help with employment support, benefits, immigration support (non-rep), travel services, and more. See the Services page for details."
+      },
+      {
+        keys: ["portal", "upload", "documents"],
+        answer: "The client portal supports document uploads. Uploads are not enabled yet, but the space is ready."
+      }
+    ];
+
+    function getReply(msg) {
+      const text = msg.toLowerCase();
+      for (const item of kb) {
+        if (item.keys.some(k => text.includes(k))) return item.answer;
+      }
+      return "I can help with hours, booking, services, or contact info. You can also use the Contact page.";
+    }
+
+    function openChat() {
+      panel?.classList.remove("hidden");
+      toggleBtn?.setAttribute("aria-expanded", "true");
+      if (body && body.childElementCount === 0) {
+        addMsg("Hi! How can I help you today?");
+      }
+      input?.focus();
+    }
+
+    function closeChat() {
+      panel?.classList.add("hidden");
+      toggleBtn?.setAttribute("aria-expanded", "false");
+    }
+
+    toggleBtn?.addEventListener("click", () => {
+      if (panel?.classList.contains("hidden")) openChat();
+      else closeChat();
+    });
+    closeBtn?.addEventListener("click", closeChat);
+
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const msg = (input?.value || "").trim();
+      if (!msg) return;
+      addMsg(msg, "user");
+      input.value = "";
+      setTimeout(() => addMsg(getReply(msg), "bot"), 250);
+    });
+  }
+
   function escapeHtml(s) {
     return String(s ?? "")
       .replace(/&/g, "&amp;")
@@ -431,6 +686,9 @@
     renderBookingServiceOptions();
     setupBookingForm();
     setupContactForm();
+    setupSignInForm();
+    setupPortalApp();
+    setupChatWidget();
     initMapIfPresent();
     initFlatpickrIfPresent();
   });

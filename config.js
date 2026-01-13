@@ -19,5 +19,13 @@ window.HRH_CONFIG = {
   // GitHub Pages site uses Vercel for API.
   API_BASE_URL: "https://harmonyweb-2.vercel.app",
   BOOKING_ENDPOINT: "/api/appointments",      // Example: "https://api.yourdomain.ca/appointments"
-  CONTACT_ENDPOINT: "/api/contact"            // Example: "https://api.yourdomain.ca/contact"
+  CONTACT_ENDPOINT: "/api/contact",           // Example: "https://api.yourdomain.ca/contact"
+
+  // Auth + portal
+  AUTH_ENDPOINT: "/api/auth/login",           // Update when your auth API is ready.
+  PORTAL_URL: "portal/",                      // Client portal route.
+
+  // Chat assistant (basic website help)
+  CHATBOT_ENABLED: true,
+  CHATBOT_NAME: "HRH Assistant"
 };
