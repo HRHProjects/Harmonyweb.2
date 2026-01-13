@@ -16,8 +16,8 @@ window.HRH_CONFIG = {
   mapLng: -111.3843884,
 
   // Backend endpoints (leave empty if the site and API are on the same domain).
-  // If the site is on GitHub Pages and the API is on Vercel, set API_BASE_URL to your Vercel URL.
-  API_BASE_URL: "",
+  // GitHub Pages site uses Vercel for API.
+  API_BASE_URL: "https://harmonyweb-2.vercel.app",
   BOOKING_ENDPOINT: "/api/appointments",      // Example: "https://api.yourdomain.ca/appointments"
   CONTACT_ENDPOINT: "/api/contact"            // Example: "https://api.yourdomain.ca/contact"
 };
