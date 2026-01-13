@@ -22,7 +22,7 @@
     setHref("[data-phone-tel]", cfg.phoneE164 ? `tel:${cfg.phoneE164}` : (cfg.phoneDisplay ? `tel:${cfg.phoneDisplay}` : "#"));
 
     setText("[data-email]", cfg.email || "");
-    setHref("[data-email-mailto]", cfg.email ? `mailto:${cfg.email}` : "#");
+    setHref("[data-email-mailto]", "#");
 
     setText("[data-address-line1]", cfg.addressLine1 || "");
     setText("[data-address-line2]", cfg.addressLine2 || "");
@@ -206,13 +206,14 @@
         return;
       }
 
-      // Try backend first, if configured. Otherwise fallback to mailto.
+      // Send to backend endpoint (appointments API).
       const endpoint = (cfg.API_BASE_URL ? cfg.API_BASE_URL.replace(/\/$/, "") : "") + (cfg.BOOKING_ENDPOINT || "");
-      const canPost = Boolean(cfg.BOOKING_ENDPOINT) && !cfg.BOOKING_ENDPOINT.startsWith("/") ? true : Boolean(cfg.API_BASE_URL);
-
-      // If you are using a relative endpoint on the same domain, it can still work:
-      // we attempt the POST regardless, and fallback if it fails.
       const postUrl = cfg.API_BASE_URL ? endpoint : (cfg.BOOKING_ENDPOINT || "");
+
+      if (!postUrl) {
+        setStatus("Appointment requests are unavailable right now. Please try again later.", "error");
+        return;
+      }
 
       setStatus("Submitting appointment request…");
 
@@ -229,23 +230,7 @@
         form.reset();
         otherWrap?.classList.add("hidden");
       } catch (err) {
-        // Mailto fallback
-        const subject = encodeURIComponent("Appointment Request — Harmony Resource Hub");
-        const lines = [
-          `Service: ${payload.service}${payload.service === "Other" ? " — " + payload.otherService : ""}`,
-          `Appointment type: ${payload.appointmentType}`,
-          `Preferred date/time: ${payload.preferredDateTime}`,
-          `Name: ${payload.clientName}`,
-          `Email: ${payload.clientEmail}`,
-          `Phone: ${payload.clientPhone}`,
-          `Preferred contact: ${payload.preferredContact}`,
-          "",
-          "Message:",
-          payload.message || "(none)"
-        ];
-        const body = encodeURIComponent(lines.join("\n"));
-        window.location.href = `mailto:${cfg.email || ""}?subject=${subject}&body=${body}`;
-        setStatus("Opening your email app to send the request…", "ok");
+        setStatus("Unable to submit right now. Please try again later.", "error");
       }
     });
   }
@@ -277,6 +262,11 @@
       const endpoint = (cfg.API_BASE_URL ? cfg.API_BASE_URL.replace(/\/$/, "") : "") + (cfg.CONTACT_ENDPOINT || "");
       const postUrl = cfg.API_BASE_URL ? endpoint : (cfg.CONTACT_ENDPOINT || "");
 
+      if (!postUrl) {
+        setStatus("Contact form is unavailable right now. Please try again later.", "error");
+        return;
+      }
+
       setStatus("Sending…");
       try {
         const res = await fetch(postUrl, {
@@ -289,12 +279,7 @@
         setStatus("Message sent. We will respond as soon as possible.", "ok");
         form.reset();
       } catch (err) {
-        const subject = encodeURIComponent("Website message — Harmony Resource Hub");
-        const body = encodeURIComponent(
-          `Name: ${payload.name}\nEmail: ${payload.email}\nPhone: ${payload.phone}\n\n${payload.message}`
-        );
-        window.location.href = `mailto:${cfg.email || ""}?subject=${subject}&body=${body}`;
-        setStatus("Opening your email app…", "ok");
+        setStatus("Unable to send your message right now. Please try again later.", "error");
       }
     });
   }
