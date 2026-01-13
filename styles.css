@@ -16,6 +16,36 @@ body {
 }
 a { text-underline-offset: 3px; }
 
+/* Auth tabs */
+.auth-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f8fafc;
+}
+.auth-tab {
+  flex: 1;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  background: transparent;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+.auth-tab:hover {
+  color: var(--brand-600);
+}
+.auth-tab.is-active {
+  background: #ffffff;
+  color: var(--brand-600);
+  border-color: rgba(15, 118, 110, 0.2);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
 /* Logo sizing: larger and responsive for better visibility */
 .logo-badge {
   width: 56px;

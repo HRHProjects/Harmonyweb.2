@@ -418,6 +418,30 @@
     });
   }
 
+  function setupAuthTabs() {
+    const tabs = qsa("[data-auth-tab]");
+    const panels = qsa("[data-auth-panel]");
+    if (!tabs.length || !panels.length) return;
+
+    function activate(name) {
+      tabs.forEach(btn => {
+        const active = btn.getAttribute("data-auth-tab") === name;
+        btn.classList.toggle("is-active", active);
+      });
+      panels.forEach(panel => {
+        const active = panel.getAttribute("data-auth-panel") === name;
+        panel.classList.toggle("hidden", !active);
+      });
+    }
+
+    tabs.forEach(btn => {
+      btn.addEventListener("click", () => activate(btn.getAttribute("data-auth-tab")));
+    });
+
+    const initial = window.location.hash === "#register" ? "register" : "login";
+    activate(initial);
+  }
+
   function setupSignInForm() {
     const form = qs("#signinForm");
     if (!form) return;
@@ -443,12 +467,13 @@
         return;
       }
 
-      if (!cfg.AUTH_ENDPOINT) {
+      const loginEndpoint = cfg.AUTH_LOGIN_ENDPOINT || cfg.AUTH_ENDPOINT || "";
+      if (!loginEndpoint) {
         setStatus("Sign-in is not available yet. Please contact us for help.", "error");
         return;
       }
 
-      const postUrl = getApiUrl(cfg.AUTH_ENDPOINT);
+      const postUrl = getApiUrl(loginEndpoint);
       if (!postUrl) {
         setStatus("Sign-in is not available yet. Please contact us for help.", "error");
         return;
@@ -476,6 +501,87 @@
         window.location.href = target;
       } catch (err) {
         setStatus(err.message || "Sign-in failed.", "error");
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  }
+
+  function setupRegisterForm() {
+    const form = qs("#registerForm");
+    if (!form) return;
+
+    const status = qs("#registerStatus");
+    const submitBtn = qs("button[type='submit']", form);
+
+    function setStatus(msg, kind="info") {
+      if (!status) return;
+      status.textContent = msg;
+      status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
+        kind === "error" ? "text-rose-700" : "text-slate-600");
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fullName = (qs("#rName")?.value || "").trim();
+      const email = (qs("#rEmail")?.value || "").trim();
+      const phone = (qs("#rPhone")?.value || "").trim();
+      const password = (qs("#rPassword")?.value || "").trim();
+      const confirm = (qs("#rPasswordConfirm")?.value || "").trim();
+
+      if (!fullName || !email || !password || !confirm) {
+        setStatus("Please complete all required fields.", "error");
+        return;
+      }
+      if (password.length < 8) {
+        setStatus("Password must be at least 8 characters.", "error");
+        return;
+      }
+      if (password !== confirm) {
+        setStatus("Passwords do not match.", "error");
+        return;
+      }
+
+      const registerEndpoint = cfg.AUTH_REGISTER_ENDPOINT || "";
+      if (!registerEndpoint) {
+        setStatus("Account requests are not available yet. Please contact us.", "error");
+        return;
+      }
+
+      const postUrl = getApiUrl(registerEndpoint);
+      if (!postUrl) {
+        setStatus("Account requests are not available yet. Please contact us.", "error");
+        return;
+      }
+
+      setStatus("Submitting request...");
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const res = await fetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fullName, email, phone, password })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Request failed.");
+
+        const token = data.token || data.session || data.jwt || "";
+        if (token) {
+          localStorage.setItem("hrh_auth_token", token);
+          localStorage.setItem("hrh_auth_session", "true");
+          localStorage.setItem("hrh_auth_email", email);
+          const target = cfg.PORTAL_URL || "portal/";
+          window.location.href = target;
+          return;
+        }
+
+        setStatus("Request received. We will email you once approved.", "ok");
+        form.reset();
+      } catch (err) {
+        setStatus(err.message || "Request failed.", "error");
       } finally {
         if (submitBtn) submitBtn.disabled = false;
       }
@@ -686,7 +792,9 @@
     renderBookingServiceOptions();
     setupBookingForm();
     setupContactForm();
+    setupAuthTabs();
     setupSignInForm();
+    setupRegisterForm();
     setupPortalApp();
     setupChatWidget();
     initMapIfPresent();

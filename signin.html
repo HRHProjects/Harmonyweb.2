@@ -73,7 +73,7 @@
     <div class="max-w-xl">
       <h1 class="text-3xl font-semibold tracking-tight">Sign in</h1>
       <p class="mt-3 text-slate-600">
-        Sign in to access the client portal for document uploads and application updates.
+        Sign in or request an account to access the client portal for document uploads and application updates.
       </p>
       <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="text-sm font-semibold">Portal features</div>
@@ -87,7 +87,12 @@
     </div>
 
     <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
-      <form id="signinForm" class="grid gap-4">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab is-active" data-auth-tab="login">Sign in</button>
+        <button type="button" class="auth-tab" data-auth-tab="register">Create account</button>
+      </div>
+
+      <form id="signinForm" class="mt-5 grid gap-4" data-auth-panel="login">
         <div>
           <label class="block text-sm font-medium text-slate-700" for="sEmail">Email</label>
           <input id="sEmail" type="email" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
@@ -101,7 +106,45 @@
         </button>
         <div id="signinStatus" class="text-sm text-slate-600"></div>
         <div class="text-xs text-slate-500">
-          Need access? Contact us and we will help you set up an account.
+          Need access? Create an account request and we will follow up.
+        </div>
+      </form>
+
+      <form id="registerForm" class="mt-5 grid gap-4 hidden" data-auth-panel="register">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="block text-sm font-medium text-slate-700" for="rName">Full name</label>
+            <input id="rName" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700" for="rPhone">Phone (optional)</label>
+            <input id="rPhone" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700" for="rEmail">Email</label>
+          <input id="rEmail" type="email" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="block text-sm font-medium text-slate-700" for="rPassword">Password</label>
+            <input id="rPassword" type="password" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700" for="rPasswordConfirm">Confirm password</label>
+            <input id="rPasswordConfirm" type="password" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" required />
+          </div>
+        </div>
+        <label class="flex items-start gap-3 text-sm text-slate-600">
+          <input id="rAgree" type="checkbox" class="mt-1" required />
+          <span>I agree to the <a class="hover:underline" href="terms.html">Terms of Service</a> and <a class="hover:underline" href="privacy.html">Privacy Policy</a>.</span>
+        </label>
+        <button class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" type="submit">
+          Request account
+        </button>
+        <div id="registerStatus" class="text-sm text-slate-600"></div>
+        <div class="text-xs text-slate-500">
+          Account access is reviewed by our team. We will email you once approved.
         </div>
       </form>
     </div>

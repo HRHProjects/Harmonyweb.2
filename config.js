@@ -22,7 +22,9 @@ window.HRH_CONFIG = {
   CONTACT_ENDPOINT: "/api/contact",           // Example: "https://api.yourdomain.ca/contact"
 
   // Auth + portal
-  AUTH_ENDPOINT: "/api/auth/login",           // Update when your auth API is ready.
+  AUTH_LOGIN_ENDPOINT: "/api/auth/login",
+  AUTH_REGISTER_ENDPOINT: "/api/auth/register",
+  AUTH_ENDPOINT: "/api/auth/login",           // Backwards-compatible alias.
   PORTAL_URL: "portal/",                      // Client portal route.
 
   // Chat assistant (basic website help)

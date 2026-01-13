@@ -24,6 +24,8 @@ If the POST fails (or you haven't connected endpoints yet), the forms fall back 
 Serverless functions are located at:
 - `api/appointments.js`
 - `api/contact.js`
+- `api/auth/register.js` (account request intake)
+- `api/auth/login.js` (minimal login placeholder)
 
 Set these Environment Variables in Vercel (Project -> Settings -> Environment Variables):
 - `RESEND_API_KEY` (required)
@@ -31,6 +33,11 @@ Set these Environment Variables in Vercel (Project -> Settings -> Environment Va
 - `HRH_TO_EMAIL` (optional, defaults to admin@harmonyresourcehub.ca)
 - `HRH_ALLOWED_ORIGINS` (optional, comma-separated origins)
 - `HRH_SUBJECT_PREFIX` (optional)
+
+Auth placeholder variables (for `api/auth/login.js`):
+- `HRH_AUTH_PASSWORD` (required for login)
+- `HRH_ALLOWED_USERS` (optional, comma-separated allowlist)
+- `HRH_AUTH_EMAIL` (optional, single allowed email)
 
 If the site is hosted on GitHub Pages and the API is on Vercel, set `API_BASE_URL` in `config.js` to your Vercel deployment URL (example: `https://your-project.vercel.app`).
 
