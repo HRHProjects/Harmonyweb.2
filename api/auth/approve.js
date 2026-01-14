@@ -165,6 +165,94 @@ module.exports = async (req, res) => {
     // For now, we'll store approved accounts in memory
     const accountKey = `${email}:${token}`;
 
+module.exports = async (req, res) => {
+  setCors(req, res);
+
+  if (req.method === "OPTIONS") return res.status(204).end();
+  if (req.method !== "GET" && req.method !== "POST") {
+    return res.status(405).json({ ok: false, error: "Method not allowed" });
+  }
+
+  try {
+    rateLimitOrThrow(req);
+
+    const { token, email, action } = req.method === "GET" ? req.query : await (async () => {
+      const body = req.body && typeof req.body === "object" ? req.body : {};
+      return body;
+    })();
+
+    if (!token || !email) {
+      // Browser request - render error page
+      if (req.method === "GET") {
+        return res.status(400).send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Approval Error | Harmony Resource Hub</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+          </head>
+          <body class="bg-slate-50">
+            <div class="min-h-screen flex items-center justify-center px-4">
+              <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-soft max-w-md w-full">
+                <div class="text-center">
+                  <div class="inline-flex items-center justify-center rounded-full bg-red-50 w-16 h-16">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </div>
+                  <h1 class="mt-4 text-2xl font-semibold text-slate-900">Invalid approval link</h1>
+                  <p class="mt-2 text-slate-600">The approval link is missing required information.</p>
+                  <a href="${process.env.HRH_SITE_URL || "https://www.harmonyresourcehub.ca"}" class="mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800">
+                    Return home
+                  </a>
+                </div>
+              </div>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+      return res.status(400).json({ 
+        ok: false, 
+        error: "Missing token or email parameter" 
+      });
+    }
+
+    const approvalAction = (action || "approve").toLowerCase();
+    if (!["approve", "reject"].includes(approvalAction)) {
+      if (req.method === "GET") {
+        return res.status(400).send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Invalid Action | Harmony Resource Hub</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+          </head>
+          <body class="bg-slate-50">
+            <div class="min-h-screen flex items-center justify-center px-4">
+              <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-soft max-w-md w-full">
+                <h1 class="text-2xl font-semibold text-slate-900">Invalid action</h1>
+                <p class="mt-2 text-slate-600">The approval action is not valid.</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+      return res.status(400).json({ 
+        ok: false, 
+        error: "Action must be 'approve' or 'reject'" 
+      });
+    }
+
+    // In a production system, validate the token against a database
+    // For now, we'll store approved accounts in memory
+    const accountKey = `${email}:${token}`;
+
     if (approvalAction === "approve") {
       // Mark account as approved
       approvedAccounts.set(email, {
@@ -220,6 +308,40 @@ If you have any questions, please contact us at admin@harmonyresourcehub.ca`;
         // Don't fail the approval if email sending fails
       }
 
+      // For browser requests, show success page
+      if (req.method === "GET") {
+        return res.status(200).send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Account Approved | Harmony Resource Hub</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+          </head>
+          <body class="bg-slate-50">
+            <div class="min-h-screen flex items-center justify-center px-4">
+              <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-soft max-w-md w-full">
+                <div class="text-center">
+                  <div class="inline-flex items-center justify-center rounded-full bg-emerald-50 w-16 h-16">
+                    <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <h1 class="mt-4 text-2xl font-semibold text-slate-900">Account Approved!</h1>
+                  <p class="mt-2 text-slate-600">Your account for <strong>${escapeHtml(email)}</strong> has been approved.</p>
+                  <p class="mt-2 text-sm text-slate-500">A confirmation email has been sent to you.</p>
+                  <a href="${process.env.HRH_SITE_URL || "https://www.harmonyresourcehub.ca"}/signin.html" class="mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800">
+                    Sign in to your account
+                  </a>
+                </div>
+              </div>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+
       return res.status(200).json({
         ok: true,
         message: `Account ${email} has been approved. User notified via email.`,
@@ -270,6 +392,40 @@ If you have any questions or would like to reapply, please contact us at admin@h
         console.error("Failed to send rejection email to user:", e.message);
       }
 
+      // For browser requests, show rejection page
+      if (req.method === "GET") {
+        return res.status(200).send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Account Request Update | Harmony Resource Hub</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+          </head>
+          <body class="bg-slate-50">
+            <div class="min-h-screen flex items-center justify-center px-4">
+              <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-soft max-w-md w-full">
+                <div class="text-center">
+                  <div class="inline-flex items-center justify-center rounded-full bg-amber-50 w-16 h-16">
+                    <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <h1 class="mt-4 text-2xl font-semibold text-slate-900">Request Status Update</h1>
+                  <p class="mt-2 text-slate-600">Your account request could not be approved at this time.</p>
+                  <p class="mt-2 text-sm text-slate-500">A confirmation email has been sent to you.</p>
+                  <a href="${process.env.HRH_SITE_URL || "https://www.harmonyresourcehub.ca"}" class="mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800">
+                    Return home
+                  </a>
+                </div>
+              </div>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+
       return res.status(200).json({
         ok: true,
         message: `Account ${email} has been rejected. User notified via email.`,
@@ -278,6 +434,41 @@ If you have any questions or would like to reapply, please contact us at admin@h
     }
   } catch (e) {
     const status = e.statusCode || 500;
-    return res.status(status).json({ ok: false, error: e.message || "Server error" });
+    const errorMessage = e.message || "Server error";
+    
+    // For browser requests, show error page
+    if (req.method === "GET") {
+      return res.status(status).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>Error | Harmony Resource Hub</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-slate-50">
+          <div class="min-h-screen flex items-center justify-center px-4">
+            <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-soft max-w-md w-full">
+              <div class="text-center">
+                <div class="inline-flex items-center justify-center rounded-full bg-red-50 w-16 h-16">
+                  <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0-6h.01"></path>
+                  </svg>
+                </div>
+                <h1 class="mt-4 text-2xl font-semibold text-slate-900">Error Processing Request</h1>
+                <p class="mt-2 text-slate-600">${escapeHtml(errorMessage)}</p>
+                <a href="${process.env.HRH_SITE_URL || "https://www.harmonyresourcehub.ca"}" class="mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800">
+                  Return home
+                </a>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+    
+    return res.status(status).json({ ok: false, error: errorMessage });
   }
 };
