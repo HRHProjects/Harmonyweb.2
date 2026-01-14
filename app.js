@@ -702,7 +702,7 @@
         <div class="chat-header">
           <div>
             <div class="text-sm font-semibold">${escapeHtml(cfg.CHATBOT_NAME || "HRH Assistant")}</div>
-            <div class="text-xs text-slate-500">Website help</div>
+            <div class="text-xs text-slate-500">AI Assistant • Always ready to help</div>
           </div>
           <button type="button" class="text-slate-500 hover:text-slate-700" data-chat-close aria-label="Close chat">
             <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4">
@@ -711,9 +711,19 @@
           </button>
         </div>
         <div class="chat-body" data-chat-body></div>
+        <div class="chat-suggestions" data-chat-suggestions></div>
+        <div class="chat-typing hidden" data-chat-typing>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
         <form class="chat-form" data-chat-form>
           <input class="chat-input" type="text" placeholder="Ask about services, hours, booking..." aria-label="Chat message" />
-          <button class="chat-send" type="submit">Send</button>
+          <button class="chat-send" type="submit" aria-label="Send message">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4">
+              <path fill="currentColor" d="M3 13h14v-2H3v2zm0-6h14V5H3v2zm0 12h14v-2H3v2z"/>
+            </svg>
+          </button>
         </form>
       </div>
     `;
@@ -726,53 +736,140 @@
     const form = qs("[data-chat-form]", root);
     const input = qs(".chat-input", root);
     const body = qs("[data-chat-body]", root);
+    const suggestions = qs("[data-chat-suggestions]", root);
+    const typing = qs("[data-chat-typing]", root);
 
-    function addMsg(text, role="bot") {
+    // Session state
+    let chatStarted = false;
+    let messageCount = 0;
+
+    function addMsg(text, role="bot", showSuggestions=false) {
       if (!body) return;
       const div = document.createElement("div");
       div.className = role === "user" ? "chat-msg chat-user" : "chat-msg chat-bot";
-      div.textContent = text;
+      div.innerHTML = escapeHtml(text);
       body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+      return div;
+    }
+
+    function showTyping() {
+      typing?.classList.remove("hidden");
       body.scrollTop = body.scrollHeight;
     }
 
+    function hideTyping() {
+      typing?.classList.add("hidden");
+    }
+
+    function showSuggestions(suggestionTexts) {
+      if (!suggestions) return;
+      suggestions.innerHTML = "";
+      suggestionTexts.forEach(text => {
+        const btn = document.createElement("button");
+        btn.className = "chat-suggestion-btn";
+        btn.textContent = text;
+        btn.type = "button";
+        btn.addEventListener("click", () => {
+          input.value = text;
+          form.dispatchEvent(new Event("submit"));
+        });
+        suggestions.appendChild(btn);
+      });
+    }
+
+    function clearSuggestions() {
+      if (suggestions) suggestions.innerHTML = "";
+    }
+
+    // Enhanced knowledge base with patterns
     const kb = [
       {
-        keys: ["hours", "open", "close", "time"],
-        answer: "Hours: Mon-Fri 9:30 AM-7:00 PM (closed 12:00-1:00), Sat 10:00 AM-4:00 PM (closed 12:00-1:00), Sun closed."
+        patterns: ["hour", "open", "close", "time", "when", "available", "operating"],
+        answer: "Our hours are:\n• Mon-Fri: 9:30 AM-7:00 PM (closed 12:00-1:00)\n• Sat: 10:00 AM-4:00 PM (closed 12:00-1:00)\n• Sun: Closed",
+        suggestions: ["Booking info", "Services", "Contact us"]
       },
       {
-        keys: ["book", "appointment", "schedule"],
-        answer: "Use the Booking page to request an appointment. We will confirm availability and follow up by email or phone."
+        patterns: ["book", "appointment", "schedule", "request", "meeting"],
+        answer: "To book an appointment:\n1. Visit the Booking page\n2. Select your service and preferred time\n3. We'll confirm availability and follow up by email or phone",
+        suggestions: ["What services?", "Your hours?", "Contact info"]
       },
       {
-        keys: ["contact", "phone", "email", "address"],
-        answer: "You can reach us at " + (cfg.phoneDisplay || "our phone") + " or " + (cfg.email || "our email") + ". Address: " + (cfg.addressLine1 || "") + " " + (cfg.addressLine2 || "") + "."
+        patterns: ["contact", "phone", "email", "address", "reach", "call"],
+        answer: "Contact us at:\n📞 " + (cfg.phoneDisplay || "our phone") + "\n📧 " + (cfg.email || "our email") + "\n📍 " + (cfg.addressLine1 || "our location"),
+        suggestions: ["Book appointment", "What services?", "Our hours?"]
       },
       {
-        keys: ["services", "help", "support"],
-        answer: "We help with employment support, benefits, immigration support (non-rep), travel services, and more. See the Services page for details."
+        patterns: ["service", "support", "help", "offer", "provide", "what", "do you"],
+        answer: "We offer:\n✓ Employment support & job placement\n✓ Benefits assistance\n✓ Immigration support (non-rep)\n✓ Travel services\n✓ Community programs\n\nVisit Services page for details.",
+        suggestions: ["Book now", "Contact us", "Our hours?"]
       },
       {
-        keys: ["portal", "upload", "documents"],
-        answer: "The client portal supports document uploads. Uploads are not enabled yet, but the space is ready."
+        patterns: ["portal", "upload", "document", "file", "client", "account"],
+        answer: "The client portal is ready for:\n✓ Document uploads (coming soon)\n✓ Access to your records\n✓ Service history\n\nSign in or contact us for access.",
+        suggestions: ["How to sign in?", "Other services", "Contact"]
+      },
+      {
+        patterns: ["cost", "price", "fee", "how much", "charge", "expensive"],
+        answer: "Pricing varies by service. Contact us for a consultation and we'll provide a detailed quote.",
+        suggestions: ["Services", "Contact", "Book appointment"]
+      },
+      {
+        patterns: ["employment", "job", "work", "career", "position"],
+        answer: "We provide comprehensive employment support including job search, resume help, interview prep, and job placement. Contact us or book an appointment to discuss your needs.",
+        suggestions: ["Book now", "Contact us", "Services"]
+      },
+      {
+        patterns: ["immigration", "visa", "permit", "refugee", "sponsorship"],
+        answer: "We offer non-representative immigration support. Please contact us directly to discuss your situation in detail.",
+        suggestions: ["Contact", "Appointment", "Services"]
+      },
+      {
+        patterns: ["hello", "hi", "hey", "greetings", "good morning", "good afternoon"],
+        answer: "Hello! Welcome to Harmony Resource Hub. How can I assist you today?",
+        suggestions: ["Services", "Book appointment", "Contact us"]
+      },
+      {
+        patterns: ["thank", "thanks", "appreciate", "grateful"],
+        answer: "You're welcome! Is there anything else I can help you with?",
+        suggestions: ["Services", "Book", "Hours"]
       }
     ];
 
     function getReply(msg) {
-      const text = msg.toLowerCase();
+      const text = msg.toLowerCase().trim();
+      
+      // Exact matches first
       for (const item of kb) {
-        if (item.keys.some(k => text.includes(k))) return item.answer;
+        if (item.patterns.some(p => text.includes(p))) {
+          return { answer: item.answer, suggestions: item.suggestions };
+        }
       }
-      return "I can help with hours, booking, services, or contact info. You can also use the Contact page.";
+
+      // Fallback response
+      return {
+        answer: "I'm here to help! I can answer questions about:\n• Hours & availability\n• Booking appointments\n• Our services\n• Contact information\n\nWhat would you like to know?",
+        suggestions: ["Hours", "Services", "Contact us", "Book now"]
+      };
     }
 
     function openChat() {
       panel?.classList.remove("hidden");
       toggleBtn?.setAttribute("aria-expanded", "true");
-      if (body && body.childElementCount === 0) {
-        addMsg("Hi! How can I help you today?");
+      
+      if (body && body.childElementCount === 0 && !chatStarted) {
+        chatStarted = true;
+        
+        // Privacy warning on first open
+        const privacyMsg = "⚠️ Privacy Notice: Please do NOT share personal information (SIN, passwords, credit cards, health info) in this chat. This is a public chat session. For sensitive matters, please contact us directly.";
+        addMsg(privacyMsg, "bot");
+        
+        setTimeout(() => {
+          addMsg("Hi! I'm your HRH Assistant. How can I help you today?", "bot");
+          showSuggestions(["View hours", "Book appointment", "Learn about services", "Contact info"]);
+        }, 600);
       }
+      
       input?.focus();
     }
 
@@ -791,9 +888,25 @@
       e.preventDefault();
       const msg = (input?.value || "").trim();
       if (!msg) return;
+      
       addMsg(msg, "user");
+      clearSuggestions();
       input.value = "";
-      setTimeout(() => addMsg(getReply(msg), "bot"), 250);
+      messageCount++;
+      
+      // Show typing indicator
+      showTyping();
+      
+      setTimeout(() => {
+        hideTyping();
+        const reply = getReply(msg);
+        addMsg(reply.answer, "bot");
+        
+        // Show suggestions for next question
+        setTimeout(() => {
+          showSuggestions(reply.suggestions);
+        }, 300);
+      }, 600 + Math.random() * 400);
     });
   }
 
