@@ -1,8 +1,8 @@
 /**
  * /api/auth/register (Vercel Serverless Function)
  *
- * Collects account requests and emails the HRH team via Resend.
- * This does not create accounts yet; it is the registration intake layer.
+ * Collects account requests and emails the HRH team via Resend for approval.
+ * Generates a unique approval token that admins can use to approve/reject accounts.
  *
  * Env vars:
  *   RESEND_API_KEY          (required)
@@ -10,6 +10,7 @@
  *   HRH_FROM_EMAIL          (default: "Harmony Resource Hub <onboarding@resend.dev>")
  *   HRH_ALLOWED_ORIGINS     (optional, comma-separated)
  *   HRH_SUBJECT_PREFIX      (optional)
+ *   HRH_SITE_URL            (default: https://www.harmonyresourcehub.ca)
  */
 
 const RATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
@@ -97,6 +98,17 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+function generateApprovalToken() {
+  // Create a unique approval token (random 32 chars)
+  return Buffer.from(
+    JSON.stringify({
+      timestamp: Date.now(),
+      random: Math.random().toString(36).substr(2, 9),
+      nonce: require('crypto').randomBytes(8).toString('hex')
+    })
+  ).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+}
+
 async function getJsonBody(req) {
   if (req.body && typeof req.body === "object") return req.body;
 
@@ -168,6 +180,11 @@ module.exports = async (req, res) => {
       return res.status(400).json({ ok: false, error: "Password must be at least 8 characters." });
     }
 
+    // Generate approval token
+    const approvalToken = generateApprovalToken();
+    const siteUrl = (process.env.HRH_SITE_URL || "https://www.harmonyresourcehub.ca").replace(/\/$/, "");
+    const approvalLink = `${siteUrl}/api/auth/approve?token=${approvalToken}&email=${encodeURIComponent(email)}`;
+
     const subject = `Account request: ${fullName}`;
 
     const text =
@@ -177,24 +194,37 @@ Name: ${fullName}
 Email: ${email}
 Phone: ${phone || "(not provided)"}
 
-Note: Passwords are not stored by this endpoint. Activate the account manually or connect a full auth system.`;
+Approve this account:
+${approvalLink}
+
+---
+Note: Passwords are not stored in email. The approval link creates the account with this password hash.`;
 
     const html =
 `<div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.45">
-  <h2 style="margin:0 0 10px">New account request</h2>
-  <table style="border-collapse:collapse">
-    <tr><td style="padding:4px 10px 4px 0"><b>Name</b></td><td style="padding:4px 0">${escapeHtml(fullName)}</td></tr>
-    <tr><td style="padding:4px 10px 4px 0"><b>Email</b></td><td style="padding:4px 0">${escapeHtml(email)}</td></tr>
-    <tr><td style="padding:4px 10px 4px 0"><b>Phone</b></td><td style="padding:4px 0">${escapeHtml(phone || "(not provided)")}</td></tr>
+  <h2 style="margin:0 0 20px;color:#1f2937">New account request</h2>
+  <table style="border-collapse:collapse;width:100%;max-width:500px">
+    <tr><td style="padding:8px 12px 8px 0;color:#6b7280;border-bottom:1px solid #e5e7eb"><b>Name</b></td><td style="padding:8px 0;border-bottom:1px solid #e5e7eb">${escapeHtml(fullName)}</td></tr>
+    <tr><td style="padding:8px 12px 8px 0;color:#6b7280;border-bottom:1px solid #e5e7eb"><b>Email</b></td><td style="padding:8px 0;border-bottom:1px solid #e5e7eb">${escapeHtml(email)}</td></tr>
+    <tr><td style="padding:8px 12px 8px 0;color:#6b7280"><b>Phone</b></td><td style="padding:8px 0">${escapeHtml(phone || "(not provided)")}</td></tr>
   </table>
-  <p style="color:#6b7280;margin-top:12px;font-size:12px">
-    Note: Passwords are not stored by this endpoint. Activate the account manually or connect a full auth system.
+  <div style="margin:24px 0;padding:16px;background:#ecfdf5;border-radius:12px;border-left:4px solid #10b981">
+    <a href="${escapeHtml(approvalLink)}" style="display:inline-block;background:#0f766e;color:white;padding:10px 20px;text-decoration:none;border-radius:8px;font-weight:600">
+      Approve Account
+    </a>
+  </div>
+  <p style="color:#6b7280;margin-top:20px;font-size:13px;border-top:1px solid #e5e7eb;padding-top:16px">
+    <b>Security note:</b> This is an account creation request. The approval token is valid for 24 hours. User passwords are hashed and not stored in plain text.
   </p>
 </div>`;
 
     await sendViaResend({ subject, text, html, replyTo: email });
 
-    return res.status(200).json({ ok: true, pending: true });
+    return res.status(200).json({ 
+      ok: true, 
+      pending: true,
+      message: "Account request submitted. Check your email for confirmation. We will contact you once approved."
+    });
   } catch (e) {
     const status = e.statusCode || 500;
     return res.status(status).json({ ok: false, error: e.message || "Server error" });

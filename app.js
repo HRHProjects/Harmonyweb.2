@@ -554,9 +554,14 @@
       const phone = (qs("#rPhone")?.value || "").trim();
       const password = (qs("#rPassword")?.value || "").trim();
       const confirm = (qs("#rPasswordConfirm")?.value || "").trim();
+      const agree = qs("#rAgree")?.checked || false;
 
       if (!fullName || !email || !password || !confirm) {
         setStatus("Please complete all required fields.", "error");
+        return;
+      }
+      if (!agree) {
+        setStatus("You must agree to the Terms of Service and Privacy Policy.", "error");
         return;
       }
       if (password.length < 8) {
@@ -603,7 +608,8 @@
           return;
         }
 
-        setStatus("Request received. We will email you once approved.", "ok");
+        // Success - show confirmation message
+        setStatus(data.message || "✓ Request received! Check your email for next steps.", "ok");
         form.reset();
       } catch (err) {
         setStatus(err.message || "Request failed.", "error");

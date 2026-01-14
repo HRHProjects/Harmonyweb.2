@@ -24,6 +24,8 @@ window.HRH_CONFIG = {
   // Auth + portal
   AUTH_LOGIN_ENDPOINT: "/api/auth/login",
   AUTH_REGISTER_ENDPOINT: "/api/auth/register",
+  AUTH_VERIFY_ENDPOINT: "/api/auth/verify",
+  AUTH_APPROVE_ENDPOINT: "/api/auth/approve",
   AUTH_ENDPOINT: "/api/auth/login",           // Backwards-compatible alias.
   PORTAL_URL: "portal/",                      // Client portal route.
 
