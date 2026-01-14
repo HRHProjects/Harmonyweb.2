@@ -747,7 +747,7 @@
       if (!body) return;
       const div = document.createElement("div");
       div.className = role === "user" ? "chat-msg chat-user" : "chat-msg chat-bot";
-      div.innerHTML = escapeHtml(text);
+      div.textContent = text;
       body.appendChild(div);
       body.scrollTop = body.scrollHeight;
       return div;
