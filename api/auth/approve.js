@@ -97,11 +97,18 @@ function escapeHtml(str) {
 async function sendViaResend({ subject, text, html, replyTo, to }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.error("[sendViaResend] No RESEND_API_KEY set");
+    console.error("[sendViaResend] No RESEND_API_KEY set. Get one from https://resend.com/api-keys");
     return;
   }
 
-  const from = process.env.HRH_FROM_EMAIL || "Harmony Resource Hub <onboarding@resend.dev>";
+  const from = process.env.HRH_FROM_EMAIL || "Harmony Resource Hub <noreply@harmonyresourcehub.ca>";
+  
+  // Validate that FROM email domain matches expected patterns
+  if (!from.includes("@")) {
+    console.error("[sendViaResend] Invalid FROM email format. Should be: 'Name <email@domain.com>'");
+    return;
+  }
+
   const body = JSON.stringify({ from, to, subject, text, html, reply_to: replyTo });
 
   try {
@@ -116,9 +123,12 @@ async function sendViaResend({ subject, text, html, replyTo, to }) {
 
     if (!resp.ok) {
       const msg = await resp.text();
-      const err = new Error(`Email provider error: ${resp.status} ${msg}`);
-      err.statusCode = 502;
-      throw err;
+      console.error("[sendViaResend] Email provider error:", resp.status, msg);
+      console.error("[sendViaResend] Make sure:");
+      console.error("  - Domain is verified in Resend: https://resend.com/domains");
+      console.error("  - RESEND_API_KEY is correct");
+      console.error("  - FROM email uses verified domain");
+      throw new Error(`Email provider error: ${resp.status} ${msg}`);
     }
   } catch (e) {
     console.error("[sendViaResend] Error:", e.message);

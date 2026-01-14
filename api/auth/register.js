@@ -126,14 +126,21 @@ async function getJsonBody(req) {
 async function sendViaResend({ subject, text, html, replyTo }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    const err = new Error("Server not configured: missing RESEND_API_KEY");
+    const err = new Error("Server not configured: missing RESEND_API_KEY. Set it in your environment variables (https://resend.com/api-keys)");
     err.statusCode = 500;
     throw err;
   }
 
   const to = process.env.HRH_TO_EMAIL || "admin@harmonyresourcehub.ca";
-  const from = process.env.HRH_FROM_EMAIL || "Harmony Resource Hub <onboarding@resend.dev>";
+  const from = process.env.HRH_FROM_EMAIL || "Harmony Resource Hub <noreply@harmonyresourcehub.ca>";
   const prefix = process.env.HRH_SUBJECT_PREFIX ? `${process.env.HRH_SUBJECT_PREFIX} - ` : "";
+
+  // Validate that FROM email domain matches expected patterns
+  if (!from.includes("@")) {
+    const err = new Error("Invalid FROM email format. Should be: 'Name <email@domain.com>'");
+    err.statusCode = 500;
+    throw err;
+  }
 
   const resp = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -153,7 +160,7 @@ async function sendViaResend({ subject, text, html, replyTo }) {
 
   if (!resp.ok) {
     const msg = await resp.text();
-    const err = new Error(`Email provider error: ${resp.status} ${msg}`);
+    const err = new Error(`Email provider error: ${resp.status} ${msg}. Ensure domain is verified in Resend and RESEND_API_KEY is correct.`);
     err.statusCode = 502;
     throw err;
   }
