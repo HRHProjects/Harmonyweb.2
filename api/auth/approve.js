@@ -231,6 +231,7 @@ module.exports = async (req, res) => {
       });
 
       // Send approval email to user
+      let emailError = null;
       try {
         await sendViaResend({
           to: email,
@@ -278,9 +279,12 @@ module.exports = async (req, res) => {
           `
         });
       } catch (e) {
-        console.error("[approve] Failed to send approval email:", e.message);
+        emailError = e.message || String(e);
+        console.error("[approve] Failed to send approval email:", emailError);
         // Don't fail the approval if email fails
       }
+
+      const notice = emailError ? `<p class="mt-2 text-sm text-red-500">Failed to send confirmation email: ${escapeHtml(emailError)}</p>` : `<p class="mt-2 text-sm text-slate-500">An approval confirmation email has been sent to ${escapeHtml(email)}</p>`;
 
       if (req.method === "GET") {
         return res.status(200).send(`
@@ -302,7 +306,7 @@ module.exports = async (req, res) => {
                 </div>
                 <h1 class="mt-4 text-2xl font-semibold text-slate-900">Account Approved!</h1>
                 <p class="mt-2 text-slate-600">Your Harmony Resource Hub account has been approved.</p>
-                <p class="mt-2 text-sm text-slate-500">An approval confirmation email has been sent to ${escapeHtml(email)}</p>
+                ${notice}
                 <a href="${process.env.HRH_SITE_URL || "https://www.harmonyresourcehub.ca"}/signin.html" class="mt-6 inline-flex items-center justify-center rounded-xl bg-green-600 px-6 py-3 text-sm font-medium text-white hover:bg-green-700 w-full">
                   Log in now
                 </a>
@@ -313,7 +317,7 @@ module.exports = async (req, res) => {
         `);
       }
 
-      return res.status(200).json({ ok: true, message: "Account approved" });
+      return res.status(200).json({ ok: true, message: "Account approved", emailError });
     } else {
       // Reject
       approvedAccounts.set(email, { 
@@ -324,6 +328,7 @@ module.exports = async (req, res) => {
       });
 
       // Send rejection email to user
+      let emailError = null;
       try {
         await sendViaResend({
           to: email,
@@ -363,8 +368,11 @@ module.exports = async (req, res) => {
           `
         });
       } catch (e) {
-        console.error("[approve] Failed to send rejection email:", e.message);
+        emailError = e.message || String(e);
+        console.error("[approve] Failed to send rejection email:", emailError);
       }
+
+      const notice = emailError ? `<p class="mt-2 text-sm text-red-500">Failed to send notification email: ${escapeHtml(emailError)}</p>` : `<p class="mt-2 text-sm text-slate-500">Please contact our support team for more information.</p>`;
 
       if (req.method === "GET") {
         return res.status(200).send(`
@@ -386,7 +394,7 @@ module.exports = async (req, res) => {
                 </div>
                 <h1 class="mt-4 text-2xl font-semibold text-slate-900">Request Requires Review</h1>
                 <p class="mt-2 text-slate-600">Your account request could not be approved at this time.</p>
-                <p class="mt-2 text-sm text-slate-500">Please contact our support team for more information.</p>
+                ${notice}
                 <a href="mailto:admin@harmonyresourcehub.ca" class="mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800 w-full">
                   Contact Support
                 </a>
@@ -397,7 +405,7 @@ module.exports = async (req, res) => {
         `);
       }
 
-      return res.status(200).json({ ok: true, message: "Account request has been reviewed" });
+      return res.status(200).json({ ok: true, message: "Account request has been reviewed", emailError });
     }
   } catch (err) {
     console.error("[approve]", err);
