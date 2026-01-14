@@ -227,6 +227,7 @@
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify(payload)
         });
 
@@ -289,6 +290,7 @@
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error("Request failed");
@@ -511,11 +513,15 @@
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ email, password })
         });
 
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || "Sign-in failed.");
+        const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
+        if (!res.ok) {
+          const errorMsg = data.error || data.message || `Sign-in failed (${res.status})`;
+          throw new Error(errorMsg);
+        }
 
         const token = data.token || data.session || data.jwt || "";
         if (token) localStorage.setItem("hrh_auth_token", token);
@@ -592,25 +598,31 @@
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ fullName, email, phone, password })
         });
 
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || "Request failed.");
-
-        const token = data.token || data.session || data.jwt || "";
-        if (token) {
-          localStorage.setItem("hrh_auth_token", token);
-          localStorage.setItem("hrh_auth_session", "true");
-          localStorage.setItem("hrh_auth_email", email);
-          const target = cfg.PORTAL_URL || "portal/";
-          window.location.href = target;
-          return;
+        const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
+        if (!res.ok) {
+          const errorMsg = data.error || data.message || `Request failed (${res.status})`;
+          throw new Error(errorMsg);
         }
 
         // Success - show confirmation message
         setStatus(data.message || "✓ Request received! Check your email for next steps.", "ok");
         form.reset();
+        
+        // Only auto-login if a token was returned (instant approval case)
+        const token = data.token || data.session || data.jwt || "";
+        if (token) {
+          localStorage.setItem("hrh_auth_token", token);
+          localStorage.setItem("hrh_auth_session", "true");
+          localStorage.setItem("hrh_auth_email", email);
+          setTimeout(() => {
+            const target = cfg.PORTAL_URL || "portal/";
+            window.location.href = target;
+          }, 1500);
+        }
       } catch (err) {
         setStatus(err.message || "Request failed.", "error");
       } finally {

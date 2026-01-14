@@ -66,6 +66,8 @@ function setCors(req, res) {
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
 }
 
 function rateLimitOrThrow(req) {
