@@ -1,6 +1,10 @@
 # Harmony Resource Hub (static multi-page site)
 
-Pages:
+**🚀 Quick Start:** `npm run setup` - Automated setup, configuration, and deployment!
+
+📚 **[Complete Automation Guide](AUTOMATION_GUIDE.md)** | 🧪 **[Testing Guide](TESTING_GUIDE.md)**
+
+## Pages
 - index.html (Home)
 - services.html (Services + pricing)
 - booking.html (Appointment request)
@@ -21,6 +25,9 @@ If the POST fails (or you haven't connected endpoints yet), the forms fall back 
 `admin@harmonyresourcehub.ca`
 
 ## Vercel + Resend (email delivery)
+
+**Automated Setup:** Run `npm run setup` for complete configuration!
+
 Serverless functions are located at:
 - `api/appointments.js`
 - `api/contact.js`
@@ -40,6 +47,31 @@ Auth placeholder variables (for `api/auth/login.js`):
 - `HRH_AUTH_EMAIL` (optional, single allowed email)
 
 If the site is hosted on GitHub Pages and the API is on Vercel, set `API_BASE_URL` in `config.js` to your Vercel deployment URL (example: `https://your-project.vercel.app`).
+
+## Available Scripts
+
+### Quick Commands
+- `npm run setup` - Complete automated setup (recommended)
+- `npm run deploy` - Automated deployment with validation
+- `npm test` - Run comprehensive test suite (168 tests)
+- `npm run validate` - Validate configuration
+
+### All Scripts
+See [AUTOMATION_GUIDE.md](AUTOMATION_GUIDE.md) for complete documentation.
+
+| Command | Description |
+|---------|-------------|
+| `npm run setup` | One-command complete setup |
+| `npm run setup:env` | Configure environment variables |
+| `npm run validate` | Validate configuration |
+| `npm test` | Run test suite (148 tests) |
+| `npm run test:integration` | Run integration tests (20 tests) |
+| `npm run test:backend` | Test backend API endpoints |
+| `npm run test:production` | Test production deployment |
+| `npm run deploy` | Automated deployment |
+| `npm run deploy:production` | Deploy to production |
+| `npm run env:pull` | Download environment variables |
+| `npm run logs` | View deployment logs |
 
 ## Open-source libraries (CDN)
 - Tailwind CSS (UI)
