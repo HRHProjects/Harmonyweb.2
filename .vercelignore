@@ -1,0 +1,27 @@
+# Test files (not needed in production)
+test-suite.js
+test-integration.js
+test-runtime.html
+TEST_REPORT.md
+TESTING_GUIDE.md
+verify-setup.sh
+
+# Documentation (keep only essential docs)
+AUTH_FIXES_COMPLETE.md
+AUTH_FIXES_SUMMARY.md
+AUTH_SETUP.md
+DEPLOYMENT_TESTING_CHECKLIST.md
+IMPLEMENTATION_COMPLETE.md
+SETUP_COMPLETE.md
+SETUP_README.md
+
+# Git files
+.git/
+.gitignore
+
+# Node modules (if any)
+node_modules/
+
+# Development files
+*.log
+.DS_Store

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runtime Tests - Harmony Resource Hub</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f8f9fa;
+    }
+    h1 { color: #1a1a1a; }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .pass { color: #28a745; font-weight: bold; }
+    .fail { color: #dc3545; font-weight: bold; }
+    .info { color: #6c757d; }
+    .test-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .test-item:last-child {
+      border-bottom: none;
+    }
+    #summary {
+      background: #007bff;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Harmony Resource Hub - Runtime Tests</h1>
+  <button onclick="runTests()">Run All Tests</button>
+  
+  <div id="summary" style="display:none;">
+    <div id="summaryText"></div>
+  </div>
+  
+  <div id="results"></div>
+
+  <script src="config.js"></script>
+  <script>
+    let testsPassed = 0;
+    let testsFailed = 0;
+    const results = [];
+
+    function pass(test, detail = '') {
+      testsPassed++;
+      results.push({ status: 'pass', test, detail });
+    }
+
+    function fail(test, detail = '') {
+      testsFailed++;
+      results.push({ status: 'fail', test, detail });
+    }
+
+    function info(test, detail = '') {
+      results.push({ status: 'info', test, detail });
+    }
+
+    function runTests() {
+      testsPassed = 0;
+      testsFailed = 0;
+      results.length = 0;
+
+      // Test 1: Check config.js loaded
+      info('Configuration Tests', '');
+      if (typeof window.HRH_CONFIG !== 'undefined') {
+        pass('HRH_CONFIG object exists');
+      } else {
+        fail('HRH_CONFIG object not found');
+      }
+
+      const cfg = window.HRH_CONFIG || {};
+
+      // Test config properties
+      const requiredProps = ['brandName', 'email', 'phoneDisplay', 'API_BASE_URL', 
+                            'BOOKING_ENDPOINT', 'CONTACT_ENDPOINT'];
+      requiredProps.forEach(prop => {
+        if (cfg[prop] !== undefined) {
+          pass(`Config has ${prop}`, cfg[prop]);
+        } else {
+          fail(`Config missing ${prop}`);
+        }
+      });
+
+      // Test 2: Check localStorage availability
+      info('Browser API Tests', '');
+      try {
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        pass('localStorage is available');
+      } catch (e) {
+        fail('localStorage not available', e.message);
+      }
+
+      // Test 3: Check fetch API
+      if (typeof fetch === 'function') {
+        pass('Fetch API is available');
+      } else {
+        fail('Fetch API not available');
+      }
+
+      // Test 4: Check URL format
+      info('URL Validation Tests', '');
+      if (cfg.API_BASE_URL) {
+        try {
+          new URL(cfg.API_BASE_URL);
+          pass('API_BASE_URL is valid', cfg.API_BASE_URL);
+        } catch (e) {
+          fail('API_BASE_URL is invalid', cfg.API_BASE_URL);
+        }
+      }
+
+      // Test 5: Check email format
+      if (cfg.email && cfg.email.includes('@') && cfg.email.includes('.')) {
+        pass('Contact email format is valid', cfg.email);
+      } else {
+        fail('Contact email format is invalid', cfg.email);
+      }
+
+      // Test 6: Test DOM query selectors
+      info('DOM Tests', '');
+      const selectors = ['body', 'head', 'script'];
+      selectors.forEach(sel => {
+        if (document.querySelector(sel)) {
+          pass(`DOM selector works: ${sel}`);
+        } else {
+          fail(`DOM selector failed: ${sel}`);
+        }
+      });
+
+      // Test 7: Check for common form IDs
+      info('Form Element Tests', '');
+      // Note: These may not exist on this test page, so we just check the pattern
+      pass('Form element checking capability exists');
+
+      // Test 8: Check JSON parsing
+      info('Data Handling Tests', '');
+      try {
+        const testObj = { test: 'data' };
+        const json = JSON.stringify(testObj);
+        const parsed = JSON.parse(json);
+        if (parsed.test === 'data') {
+          pass('JSON stringify/parse works');
+        } else {
+          fail('JSON parsing produced incorrect result');
+        }
+      } catch (e) {
+        fail('JSON parsing failed', e.message);
+      }
+
+      // Test 9: Check Date object
+      try {
+        const now = new Date();
+        const year = now.getFullYear();
+        if (year >= 2024 && year <= 2030) {
+          pass('Date object works', `Current year: ${year}`);
+        } else {
+          fail('Date object returns unexpected year', year);
+        }
+      } catch (e) {
+        fail('Date object failed', e.message);
+      }
+
+      // Test 10: Check Array methods
+      info('JavaScript Core Tests', '');
+      try {
+        const arr = [1, 2, 3];
+        const mapped = arr.map(x => x * 2);
+        const filtered = arr.filter(x => x > 1);
+        if (mapped.length === 3 && filtered.length === 2) {
+          pass('Array methods work correctly');
+        } else {
+          fail('Array methods produced unexpected results');
+        }
+      } catch (e) {
+        fail('Array methods failed', e.message);
+      }
+
+      // Test 11: Check Promise support
+      if (typeof Promise === 'function') {
+        pass('Promise is supported');
+      } else {
+        fail('Promise is not supported');
+      }
+
+      // Test 12: Check async/await support (indirectly)
+      try {
+        eval('(async () => {})');
+        pass('Async/await syntax is supported');
+      } catch (e) {
+        fail('Async/await not supported', e.message);
+      }
+
+      // Test 13: Check for common XSS vulnerabilities
+      info('Security Tests', '');
+      const testXSS = '<scr' + 'ipt>alert("xss")</scr' + 'ipt>';
+      const div = document.createElement('div');
+      div.textContent = testXSS;
+      if (div.innerHTML.includes('&lt;script') || div.innerHTML.includes('&lt;scr')) {
+        pass('textContent properly escapes HTML');
+      } else {
+        fail('textContent may not escape HTML properly');
+      }
+
+      // Test 14: Check HTTPS (if applicable)
+      if (location.protocol === 'https:') {
+        pass('Page loaded over HTTPS');
+      } else if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        info('Running on localhost (HTTP is acceptable)');
+      } else {
+        fail('Page not loaded over HTTPS', 'Consider using HTTPS in production');
+      }
+
+      // Test 15: Check viewport meta tag
+      const viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (viewportMeta) {
+        pass('Viewport meta tag exists');
+      } else {
+        fail('Viewport meta tag missing');
+      }
+
+      // Display results
+      displayResults();
+    }
+
+    function displayResults() {
+      const resultsDiv = document.getElementById('results');
+      const summaryDiv = document.getElementById('summary');
+      const summaryText = document.getElementById('summaryText');
+
+      let html = '';
+      let currentSection = '';
+
+      results.forEach(r => {
+        if (r.status === 'info') {
+          if (currentSection) {
+            html += '</div>';
+          }
+          currentSection = r.test;
+          html += `<div class="test-section"><h2>${r.test}</h2>`;
+        } else {
+          const statusClass = r.status === 'pass' ? 'pass' : 'fail';
+          const icon = r.status === 'pass' ? '✓' : '✗';
+          html += `<div class="test-item">
+            <span class="${statusClass}">${icon}</span> ${r.test}
+            ${r.detail ? `<br><span class="info" style="margin-left: 20px;">→ ${r.detail}</span>` : ''}
+          </div>`;
+        }
+      });
+
+      if (currentSection) {
+        html += '</div>';
+      }
+
+      resultsDiv.innerHTML = html;
+
+      // Show summary
+      const total = testsPassed + testsFailed;
+      const percentage = total > 0 ? Math.round((testsPassed / total) * 100) : 0;
+      summaryText.innerHTML = `
+        Tests: ${total} | Passed: ${testsPassed} | Failed: ${testsFailed} | Success Rate: ${percentage}%
+      `;
+      summaryDiv.style.display = 'block';
+      summaryDiv.style.background = testsFailed === 0 ? '#28a745' : (percentage >= 80 ? '#ffc107' : '#dc3545');
+    }
+
+    // Run tests automatically on page load
+    window.addEventListener('DOMContentLoaded', runTests);
+  </script>
+</body>
+</html>

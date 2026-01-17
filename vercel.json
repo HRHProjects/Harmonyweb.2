@@ -1,11 +1,39 @@
 {
+  "version": 2,
   "buildCommand": "echo 'No build needed - static files and serverless functions'",
   "outputDirectory": ".",
   "functions": {
     "api/**/*.js": {
-      "runtime": "nodejs20.x"
+      "runtime": "nodejs20.x",
+      "maxDuration": 10
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/appointments",
+      "destination": "/api/appointments.js"
+    },
+    {
+      "source": "/api/contact",
+      "destination": "/api/contact.js"
+    },
+    {
+      "source": "/api/auth/register",
+      "destination": "/api/auth/register.js"
+    },
+    {
+      "source": "/api/auth/login",
+      "destination": "/api/auth/login.js"
+    },
+    {
+      "source": "/api/auth/verify",
+      "destination": "/api/auth/verify.js"
+    },
+    {
+      "source": "/api/auth/approve",
+      "destination": "/api/auth/approve.js"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
@@ -13,6 +41,22 @@
         {
           "key": "Cache-Control",
           "value": "no-store, no-cache, must-revalidate"
+        },
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-Requested-With, Content-Type, Authorization"
         }
       ]
     }
