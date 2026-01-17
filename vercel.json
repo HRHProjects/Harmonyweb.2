@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "echo 'No build needed - static files and serverless functions'",
-  "outputDirectory": ".",
   "functions": {
     "api/**/*.js": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 10
+      "runtime": "nodejs20.x"
     }
   },
   "rewrites": [
