@@ -11,3 +11,5 @@ pnpm-debug.log*
 Thumbs.db
 .env
 .env.*
+.vercel
+.env*.local
