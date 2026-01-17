@@ -1,22 +1,23 @@
 /**
  * /api/auth/verify (Vercel Serverless Function)
  *
- * Check if an account has been approved by admin.
- * Called by the frontend after registration to poll for approval status.
+ * Verify user's email with the 6-digit code sent during registration.
  * 
  * POST request body:
- *   email - Email address to check
+ *   email - Email address
+ *   code - 6-digit verification code
  *
  * Env vars:
  *   HRH_ALLOWED_ORIGINS     (optional, comma-separated)
  */
 
 const RATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
-const RATE_MAX = 30; // Allow frequent polling
+const RATE_MAX = 30;
 const state = globalThis.__HRH_VERIFY_RATE_STATE__ || (globalThis.__HRH_VERIFY_RATE_STATE__ = new Map());
 
-// Shared approval storage (same as approve.js)
-const approvedAccounts = globalThis.__HRH_APPROVED_ACCOUNTS__ || (globalThis.__HRH_APPROVED_ACCOUNTS__ = new Map());
+// Shared storage from register.js
+const verificationCodes = globalThis.__HRH_VERIFICATION_CODES__ || (globalThis.__HRH_VERIFICATION_CODES__ = new Map());
+const verifiedAccounts = globalThis.__HRH_VERIFIED_ACCOUNTS__ || (globalThis.__HRH_VERIFIED_ACCOUNTS__ = new Map());
 
 function now() { return Date.now(); }
 
@@ -114,40 +115,68 @@ module.exports = async (req, res) => {
 
     const body = await getJsonBody(req);
     const email = (body.email || "").toString().trim().toLowerCase();
+    const code = (body.code || "").toString().trim();
 
     if (!isValidEmail(email)) {
       return res.status(400).json({ ok: false, error: "Valid email is required." });
     }
 
-    const accountStatus = approvedAccounts.get(email);
+    if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
+      return res.status(400).json({ ok: false, error: "Valid 6-digit code is required." });
+    }
 
-    if (!accountStatus) {
-      // Account not yet processed
+    // Check if already verified
+    if (verifiedAccounts.has(email)) {
       return res.status(200).json({
         ok: true,
-        approved: false,
-        pending: true,
-        message: "Your account request is pending review."
+        verified: true,
+        message: "Email already verified. You can now sign in."
       });
     }
 
-    if (accountStatus.approved) {
-      return res.status(200).json({
-        ok: true,
-        approved: true,
-        pending: false,
-        message: "Your account has been approved! Check your email for sign-in instructions.",
-        approvedAt: accountStatus.approvedAt
+    // Check verification code
+    const verification = verificationCodes.get(email);
+
+    if (!verification) {
+      return res.status(400).json({
+        ok: false,
+        error: "No verification code found. Please register first."
       });
     }
 
-    // Account was rejected
+    // Check if code expired
+    if (Date.now() > verification.expiresAt) {
+      verificationCodes.delete(email);
+      return res.status(400).json({
+        ok: false,
+        error: "Verification code expired. Please register again."
+      });
+    }
+
+    // Verify code
+    if (verification.code !== code) {
+      return res.status(400).json({
+        ok: false,
+        error: "Invalid verification code. Please try again."
+      });
+    }
+
+    // Code is valid - mark account as verified
+    verifiedAccounts.set(email, {
+      verified: true,
+      verifiedAt: new Date().toISOString(),
+      fullName: verification.fullName,
+      password: verification.password,
+      phone: verification.phone
+    });
+
+    // Remove verification code
+    verificationCodes.delete(email);
+
     return res.status(200).json({
       ok: true,
-      approved: false,
-      rejected: true,
-      pending: false,
-      message: "Your account request was not approved. Please contact us for more information."
+      verified: true,
+      message: "Email verified successfully! You can now sign in."
     });
   } catch (e) {
     const status = e.statusCode || 500;

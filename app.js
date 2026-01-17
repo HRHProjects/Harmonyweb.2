@@ -543,12 +543,26 @@
     if (!form) return;
 
     const status = qs("#registerStatus");
+    const verifyStatus = qs("#verifyStatus");
     const submitBtn = qs("button[type='submit']", form);
+    const step1 = qs("#registerStep1");
+    const step2 = qs("#registerStep2");
+    const verifyCodeBtn = qs("#verifyCodeBtn");
+    const resendCodeBtn = qs("#resendCodeBtn");
+    
+    let registeredEmail = "";
 
     function setStatus(msg, kind="info") {
       if (!status) return;
       status.textContent = msg;
       status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
+        kind === "error" ? "text-rose-700" : "text-slate-600");
+    }
+
+    function setVerifyStatus(msg, kind="info") {
+      if (!verifyStatus) return;
+      verifyStatus.textContent = msg;
+      verifyStatus.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
         kind === "error" ? "text-rose-700" : "text-slate-600");
     }
 
@@ -591,7 +605,7 @@
         return;
       }
 
-      setStatus("Submitting request...");
+      setStatus("Creating account...");
       if (submitBtn) submitBtn.disabled = true;
 
       try {
@@ -608,26 +622,132 @@
           throw new Error(errorMsg);
         }
 
-        // Success - show confirmation message
-        setStatus(data.message || "✓ Request received! Check your email for next steps.", "ok");
-        form.reset();
+        // Show verification step
+        registeredEmail = email;
+        setStatus(data.message || "✓ Verification code sent to your email!", "ok");
         
-        // Only auto-login if a token was returned (instant approval case)
-        const token = data.token || data.session || data.jwt || "";
-        if (token) {
-          localStorage.setItem("hrh_auth_token", token);
-          localStorage.setItem("hrh_auth_session", "true");
-          localStorage.setItem("hrh_auth_email", email);
-          setTimeout(() => {
-            const target = cfg.PORTAL_URL || "portal/";
-            window.location.href = target;
-          }, 1500);
-        }
+        // Switch to step 2
+        if (step1) step1.classList.add("hidden");
+        if (step2) step2.classList.remove("hidden");
+        
       } catch (err) {
         setStatus(err.message || "Request failed.", "error");
       } finally {
         if (submitBtn) submitBtn.disabled = false;
       }
+    });
+
+    // Verify code button
+    if (verifyCodeBtn) {
+      verifyCodeBtn.addEventListener("click", async () => {
+        const code = (qs("#rVerifyCode")?.value || "").trim();
+        
+        if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
+          setVerifyStatus("Please enter a valid 6-digit code.", "error");
+          return;
+        }
+
+        const verifyEndpoint = cfg.AUTH_VERIFY_ENDPOINT || "";
+        if (!verifyEndpoint) {
+          setVerifyStatus("Verification is not available. Please contact us.", "error");
+          return;
+        }
+
+        const postUrl = getApiUrl(verifyEndpoint);
+        setVerifyStatus("Verifying...");
+        verifyCodeBtn.disabled = true;
+
+        try {
+          const res = await fetch(postUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email: registeredEmail, code })
+          });
+
+          const data = await res.json().catch(() => ({ error: "Invalid response" }));
+          if (!res.ok) {
+            throw new Error(data.error || `Verification failed (${res.status})`);
+          }
+
+          setVerifyStatus("✓ Email verified! Redirecting to sign in...", "ok");
+          
+          // Reset form and switch back to login
+          setTimeout(() => {
+            form.reset();
+            if (step2) step2.classList.add("hidden");
+            if (step1) step1.classList.remove("hidden");
+            
+            // Switch to login tab
+            const loginTab = qs('[data-auth-tab="login"]');
+            const registerTab = qs('[data-auth-tab="register"]');
+            const loginPanel = qs('[data-auth-panel="login"]');
+            const registerPanel = qs('[data-auth-panel="register"]');
+            
+            if (loginTab) loginTab.classList.add("is-active");
+            if (registerTab) registerTab.classList.remove("is-active");
+            if (loginPanel) loginPanel.classList.remove("hidden");
+            if (registerPanel) registerPanel.classList.add("hidden");
+            
+            // Pre-fill email
+            const emailInput = qs("#sEmail");
+            if (emailInput) emailInput.value = registeredEmail;
+            
+            // Show success message
+            const signinStatus = qs("#signinStatus");
+            if (signinStatus) {
+              signinStatus.textContent = "✓ Account verified! Please sign in with your password.";
+              signinStatus.className = "text-sm text-emerald-700";
+            }
+          }, 1500);
+          
+        } catch (err) {
+          setVerifyStatus(err.message || "Verification failed.", "error");
+        } finally {
+          verifyCodeBtn.disabled = false;
+        }
+      });
+    }
+
+    // Resend code button
+    if (resendCodeBtn) {
+      resendCodeBtn.addEventListener("click", async () => {
+        if (!registeredEmail) return;
+        
+        setVerifyStatus("Resending code...");
+        resendCodeBtn.disabled = true;
+
+        // Just re-register with the same email (will generate new code)
+        const registerEndpoint = cfg.AUTH_REGISTER_ENDPOINT || "";
+        const postUrl = getApiUrl(registerEndpoint);
+        
+        try {
+          const res = await fetch(postUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              fullName: qs("#rName")?.value || "",
+              email: registeredEmail,
+              phone: qs("#rPhone")?.value || "",
+              password: qs("#rPassword")?.value || ""
+            })
+          });
+
+          const data = await res.json().catch(() => ({}));
+          if (res.ok) {
+            setVerifyStatus("✓ New code sent to your email!", "ok");
+          } else {
+            throw new Error(data.error || "Failed to resend code");
+          }
+        } catch (err) {
+          setVerifyStatus(err.message || "Failed to resend code.", "error");
+        } finally {
+          resendCodeBtn.disabled = false;
+        }
+      });
+    }
+  }
     });
   }
 
@@ -938,6 +1058,48 @@
   }
   function escapeAttr(s) { return escapeHtml(s).replace(/\s+/g, " ").trim(); }
 
+  function setupGoogleSignIn() {
+    const googleBtn = qs("#googleSignInBtn");
+    if (!googleBtn) return;
+
+    googleBtn.addEventListener("click", async () => {
+      const status = qs("#signinStatus");
+      
+      function setStatus(msg, kind="info") {
+        if (!status) return;
+        status.textContent = msg;
+        status.className = "text-sm " + (kind === "ok" ? "text-emerald-700" :
+          kind === "error" ? "text-rose-700" : "text-slate-600");
+      }
+
+      setStatus("Google Sign-In coming soon! For now, please create an account with email.", "info");
+      
+      // TODO: Implement Google OAuth
+      // This would require:
+      // 1. Google Cloud Console setup (OAuth 2.0 Client ID)
+      // 2. Google Sign-In JavaScript library
+      // 3. Backend endpoint to verify Google tokens
+      // 4. Store Google user info in verified accounts
+      
+      /* Example implementation:
+      try {
+        const googleUser = await google.accounts.oauth2.initTokenClient({
+          client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+          scope: 'email profile',
+          callback: async (response) => {
+            // Verify token on backend
+            // Create session
+            // Redirect to portal
+          }
+        });
+        googleUser.requestAccessToken();
+      } catch (err) {
+        setStatus("Google Sign-In failed. Please try email sign-in.", "error");
+      }
+      */
+    });
+  }
+
   window.HRH_APP = { PRICING };
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -952,6 +1114,7 @@
     setupAuthTabs();
     setupSignInForm();
     setupRegisterForm();
+    setupGoogleSignIn();
     setupPortalApp();
     setupChatWidget();
     initMapIfPresent();

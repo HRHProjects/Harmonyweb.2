@@ -15,7 +15,10 @@ const RATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const RATE_MAX = 10;
 const state = globalThis.__HRH_RATE_STATE__ || (globalThis.__HRH_RATE_STATE__ = new Map());
 
-// Shared approval storage (synced with approve.js)
+// Shared storage for verified accounts
+const verifiedAccounts = globalThis.__HRH_VERIFIED_ACCOUNTS__ || (globalThis.__HRH_VERIFIED_ACCOUNTS__ = new Map());
+
+// Legacy approval storage (kept for backward compatibility)
 const approvedAccounts = globalThis.__HRH_APPROVED_ACCOUNTS__ || (globalThis.__HRH_APPROVED_ACCOUNTS__ = new Map());
 
 function now() { return Date.now(); }
@@ -103,6 +106,11 @@ async function getJsonBody(req) {
   try { return JSON.parse(raw); } catch { return {}; }
 }
 
+function hashPassword(password) {
+  const crypto = require('crypto');
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
+
 function getAllowedEmails() {
   const list = (process.env.HRH_ALLOWED_USERS || "")
     .split(",")
@@ -140,21 +148,38 @@ module.exports = async (req, res) => {
       return res.status(400).json({ ok: false, error: "Valid email is required." });
     }
 
+    if (!password) {
+      return res.status(400).json({ ok: false, error: "Password is required." });
+    }
+
+    // Check if user has verified account (new email verification system)
+    const verifiedAccount = verifiedAccounts.get(email);
+    if (verifiedAccount && verifiedAccount.verified) {
+      const passwordHash = hashPassword(password);
+      if (passwordHash === verifiedAccount.password) {
+        const token = base64Url(`${email}:${Date.now()}:${Math.random()}`);
+        return res.status(200).json({ ok: true, token, email, expiresIn: 8 * 60 * 60 });
+      }
+      // Wrong password for verified account
+      return res.status(401).json({ ok: false, error: "Invalid credentials." });
+    }
+
+    // Fallback to legacy allowed users system (for backward compatibility)
     const allowed = getAllowedEmails();
     const authPassword = process.env.HRH_AUTH_PASSWORD || "";
 
-    // Check if user is approved via the approval system
+    // Check if user is in legacy approved accounts
     const isApproved = approvedAccounts.has(email) && approvedAccounts.get(email).approved === true;
     const isConfigured = authPassword && (allowed.length > 0 || isApproved);
 
     if (!authPassword || !isConfigured) {
-      return res.status(503).json({
+      return res.status(401).json({
         ok: false,
-        error: "Authentication is not configured yet. Please contact us for access."
+        error: "Invalid credentials."
       });
     }
 
-    // Check if user is in allowed list OR has been approved
+    // Check if user is in allowed list OR has been approved (legacy)
     const isAllowed = allowed.includes(email) || isApproved;
 
     if (!isAllowed || password !== authPassword) {

@@ -1,21 +1,24 @@
 /**
  * /api/auth/register (Vercel Serverless Function)
  *
- * Collects account requests and emails the HRH team via Resend for approval.
- * Generates a unique approval token that admins can use to approve/reject accounts.
+ * User registration with email verification code.
+ * Sends 6-digit verification code to user's email.
  *
  * Env vars:
  *   RESEND_API_KEY          (required)
- *   HRH_TO_EMAIL            (default: admin@harmonyresourcehub.ca)
- *   HRH_FROM_EMAIL          (default: "Harmony Resource Hub <onboarding@resend.dev>")
+ *   HRH_FROM_EMAIL          (default: "Harmony Resource Hub <noreply@harmonyresourcehub.ca>")
  *   HRH_ALLOWED_ORIGINS     (optional, comma-separated)
- *   HRH_SUBJECT_PREFIX      (optional)
- *   HRH_SITE_URL            (default: https://www.harmonyresourcehub.ca)
  */
 
 const RATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const RATE_MAX = 6;
 const state = globalThis.__HRH_RATE_STATE__ || (globalThis.__HRH_RATE_STATE__ = new Map());
+
+// Store verification codes (email -> {code, expiresAt, password, fullName})
+const verificationCodes = globalThis.__HRH_VERIFICATION_CODES__ || (globalThis.__HRH_VERIFICATION_CODES__ = new Map());
+
+// Store verified accounts (email -> {verified, verifiedAt, fullName, password})
+const verifiedAccounts = globalThis.__HRH_VERIFIED_ACCOUNTS__ || (globalThis.__HRH_VERIFIED_ACCOUNTS__ = new Map());
 
 function now() { return Date.now(); }
 
@@ -101,15 +104,15 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-function generateApprovalToken() {
-  // Create a unique approval token (random 32 chars)
-  return Buffer.from(
-    JSON.stringify({
-      timestamp: Date.now(),
-      random: Math.random().toString(36).substr(2, 9),
-      nonce: require('crypto').randomBytes(8).toString('hex')
-    })
-  ).toString('base64').replace(/[^a-zA-Z0-9]/g, '').substring(0, 32);
+function generateVerificationCode() {
+  // Generate a random 6-digit code
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function hashPassword(password) {
+  // Simple hash for demo - in production use bcrypt or similar
+  const crypto = require('crypto');
+  return crypto.createHash('sha256').update(password).digest('hex');
 }
 
 async function getJsonBody(req) {
@@ -126,7 +129,7 @@ async function getJsonBody(req) {
   try { return JSON.parse(raw); } catch { return {}; }
 }
 
-async function sendViaResend({ subject, text, html, replyTo }) {
+async function sendViaResend({ subject, text, html, replyTo, to }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     const err = new Error("Server not configured: missing RESEND_API_KEY. Set it in your environment variables (https://resend.com/api-keys)");
@@ -134,7 +137,7 @@ async function sendViaResend({ subject, text, html, replyTo }) {
     throw err;
   }
 
-  const to = process.env.HRH_TO_EMAIL || "admin@harmonyresourcehub.ca";
+  const toEmail = to || process.env.HRH_TO_EMAIL || "admin@harmonyresourcehub.ca";
   const from = process.env.HRH_FROM_EMAIL || "Harmony Resource Hub <noreply@harmonyresourcehub.ca>";
   const prefix = process.env.HRH_SUBJECT_PREFIX ? `${process.env.HRH_SUBJECT_PREFIX} - ` : "";
 
@@ -153,7 +156,7 @@ async function sendViaResend({ subject, text, html, replyTo }) {
     },
     body: JSON.stringify({
       from,
-      to,
+      to: toEmail,
       subject: `${prefix}${subject}`,
       text,
       html,
@@ -190,50 +193,51 @@ module.exports = async (req, res) => {
       return res.status(400).json({ ok: false, error: "Password must be at least 8 characters." });
     }
 
-    // Generate approval token
-    const approvalToken = generateApprovalToken();
-    const siteUrl = (process.env.HRH_SITE_URL || "https://www.harmonyresourcehub.ca").replace(/\/$/, "");
-    const approvalLink = `${siteUrl}/api/auth/approve?token=${approvalToken}&email=${encodeURIComponent(email)}`;
+    // Generate 6-digit verification code
+    const verificationCode = generateVerificationCode();
+    const expiresAt = Date.now() + (15 * 60 * 1000); // 15 minutes
+    const passwordHash = hashPassword(password);
 
-    const subject = `Account request: ${fullName}`;
+    // Store verification code
+    verificationCodes.set(email.toLowerCase(), {
+      code: verificationCode,
+      expiresAt,
+      password: passwordHash,
+      fullName,
+      phone
+    });
+
+    const subject = `Verify your email - ${fullName}`;
 
     const text =
-`New account request (Harmony Resource Hub)
+`Welcome to Harmony Resource Hub!
 
-Name: ${fullName}
-Email: ${email}
-Phone: ${phone || "(not provided)"}
+Your verification code is: ${verificationCode}
 
-Approve this account:
-${approvalLink}
+This code will expire in 15 minutes.
 
----
-Note: Passwords are not stored in email. The approval link creates the account with this password hash.`;
+If you didn't request this, please ignore this email.`;
 
     const html =
-`<div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.45">
-  <h2 style="margin:0 0 20px;color:#1f2937">New account request</h2>
-  <table style="border-collapse:collapse;width:100%;max-width:500px">
-    <tr><td style="padding:8px 12px 8px 0;color:#6b7280;border-bottom:1px solid #e5e7eb"><b>Name</b></td><td style="padding:8px 0;border-bottom:1px solid #e5e7eb">${escapeHtml(fullName)}</td></tr>
-    <tr><td style="padding:8px 12px 8px 0;color:#6b7280;border-bottom:1px solid #e5e7eb"><b>Email</b></td><td style="padding:8px 0;border-bottom:1px solid #e5e7eb">${escapeHtml(email)}</td></tr>
-    <tr><td style="padding:8px 12px 8px 0;color:#6b7280"><b>Phone</b></td><td style="padding:8px 0">${escapeHtml(phone || "(not provided)")}</td></tr>
-  </table>
-  <div style="margin:24px 0;padding:16px;background:#ecfdf5;border-radius:12px;border-left:4px solid #10b981">
-    <a href="${escapeHtml(approvalLink)}" style="display:inline-block;background:#0f766e;color:white;padding:10px 20px;text-decoration:none;border-radius:8px;font-weight:600">
-      Approve Account
-    </a>
+`<div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.45;max-width:600px;margin:0 auto">
+  <h2 style="margin:0 0 20px;color:#1f2937">Welcome to Harmony Resource Hub!</h2>
+  <p style="color:#374151;margin-bottom:24px">Hi ${escapeHtml(fullName)},</p>
+  <p style="color:#374151;margin-bottom:24px">Thank you for creating an account. Please verify your email address by entering this code:</p>
+  <div style="text-align:center;margin:32px 0;padding:24px;background:#f3f4f6;border-radius:12px">
+    <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#0f766e">${verificationCode}</div>
   </div>
-  <p style="color:#6b7280;margin-top:20px;font-size:13px;border-top:1px solid #e5e7eb;padding-top:16px">
-    <b>Security note:</b> This is an account creation request. The approval token is valid for 24 hours. User passwords are hashed and not stored in plain text.
-  </p>
+  <p style="color:#6b7280;font-size:14px;margin-top:24px">This code will expire in 15 minutes.</p>
+  <p style="color:#6b7280;font-size:14px;margin-top:16px">If you didn't request this, please ignore this email.</p>
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:32px 0"/>
+  <p style="color:#9ca3af;font-size:12px">Harmony Resource Hub<br/>Fort McMurray, AB</p>
 </div>`;
 
-    await sendViaResend({ subject, text, html, replyTo: email });
+    await sendViaResend({ subject, text, html, replyTo: undefined, to: email });
 
     return res.status(200).json({ 
-      ok: true, 
-      pending: true,
-      message: "Account request submitted. Check your email for confirmation. We will contact you once approved."
+      ok: true,
+      requiresVerification: true,
+      message: "Verification code sent to your email. Please check your inbox and enter the code to complete registration."
     });
   } catch (e) {
     const status = e.statusCode || 500;
