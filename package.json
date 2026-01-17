@@ -1,0 +1,36 @@
+{
+  "name": "harmonyweb-2",
+  "version": "1.0.0",
+  "description": "Harmony Resource Hub - Multi-page static website with serverless backend",
+  "main": "app.js",
+  "scripts": {
+    "setup": "bash scripts/quick-setup.sh",
+    "setup:env": "bash scripts/setup-env.sh",
+    "validate": "bash scripts/validate-config.sh",
+    "test": "node test-suite.js",
+    "test:integration": "node test-integration.js",
+    "test:backend": "bash scripts/test-backend.sh",
+    "test:production": "bash test-production-api.sh",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy:production": "vercel --prod --yes",
+    "deploy:preview": "vercel --yes",
+    "logs": "vercel logs",
+    "env:pull": "vercel env pull .env.local",
+    "env:list": "vercel env ls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HRHProjects/Harmonyweb.2.git"
+  },
+  "keywords": [
+    "harmony",
+    "resource",
+    "hub",
+    "static-site",
+    "vercel",
+    "serverless"
+  ],
+  "author": "HRH Projects",
+  "license": "MIT",
+  "devDependencies": {}
+}
