@@ -240,7 +240,7 @@
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "omit",
           body: JSON.stringify(payload)
         });
 
@@ -303,7 +303,7 @@
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "omit",
           body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error("Request failed");
@@ -540,7 +540,7 @@
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "omit",
           body: JSON.stringify({ email, password })
         });
 
@@ -658,7 +658,7 @@
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "omit",
           body: JSON.stringify({ fullName, email, phone, password })
         });
 
@@ -713,7 +713,7 @@
           const res = await fetch(postUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: "include",
+            credentials: "omit",
             body: JSON.stringify({ email: registeredEmail, code })
           });
 
@@ -783,7 +783,7 @@
           const res = await fetch(postUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: "include",
+            credentials: "omit",
             body: JSON.stringify({
               fullName: qs("#rName")?.value || "",
               email: registeredEmail,
@@ -1187,7 +1187,7 @@
               const res = await fetch(postUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include",
+                credentials: "omit",
                 body: JSON.stringify({ 
                   email, 
                   googleToken: response.access_token,
