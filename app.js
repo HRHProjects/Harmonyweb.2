@@ -1,6 +1,9 @@
 // app.js
 (function () {
   const cfg = window.HRH_CONFIG || {};
+  console.log("📋 Configuration loaded:", cfg);
+  if (!cfg.AUTH_LOGIN_ENDPOINT) console.warn("⚠️ AUTH_LOGIN_ENDPOINT not found!");
+  if (!cfg.AUTH_REGISTER_ENDPOINT) console.warn("⚠️ AUTH_REGISTER_ENDPOINT not found!");
 
   function qs(sel, root=document) { return root.querySelector(sel); }
   function qsa(sel, root=document) { return Array.from(root.querySelectorAll(sel)); }
@@ -480,57 +483,71 @@
   }
 
   function setupSignInForm() {
-    const form = qs("#signinForm");
-    if (!form) return;
-
-    const status = qs("#signinStatus");
-    const submitBtn = qs("button[type='submit']", form);
-
-    function setStatus(msg, kind="info") {
-      if (!status) return;
-      status.textContent = msg;
-      status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
-        kind === "error" ? "text-rose-700" : "text-slate-600");
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = (qs("#sEmail")?.value || "").trim();
-      const password = (qs("#sPassword")?.value || "").trim();
-
-      if (!email || !password) {
-        setStatus("Please enter your email and password.", "error");
+    console.log("🔑 Setting up sign-in form...");
+    try {
+      const form = qs("#signinForm");
+      console.log("📝 Form element:", form);
+      if (!form) {
+        console.warn("⚠️ Sign-in form #signinForm not found in DOM!");
         return;
       }
 
-      const loginEndpoint = cfg.AUTH_LOGIN_ENDPOINT || cfg.AUTH_ENDPOINT || "";
-      if (!loginEndpoint) {
-        setStatus("Sign-in is not available yet. Please contact us for help.", "error");
-        return;
+      const status = qs("#signinStatus");
+      const submitBtn = qs("button[type='submit']", form);
+      console.log("✓ Form setup: form, status elem, submit btn found");
+
+      function setStatus(msg, kind="info") {
+        if (!status) return;
+        status.textContent = msg;
+        status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
+          kind === "error" ? "text-rose-700" : "text-slate-600");
       }
 
-      const postUrl = getApiUrl(loginEndpoint);
-      if (!postUrl) {
-        setStatus("Sign-in is not available yet. Please contact us for help.", "error");
-        return;
-      }
+      form.addEventListener("submit", async (e) => {
+        console.log("🖱️ Sign-in form submitted");
+        e.preventDefault();
 
-      setStatus("Signing in...");
-      if (submitBtn) submitBtn.disabled = true;
+        const email = (qs("#sEmail")?.value || "").trim();
+        const password = (qs("#sPassword")?.value || "").trim();
+        console.log("📧 Email:", email, "Password length:", password.length);
 
-      try {
-        console.log("🔐 Attempting login to:", postUrl);
-        const res = await fetch(postUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ email, password })
-        });
+        if (!email || !password) {
+          console.warn("⚠️ Missing email or password");
+          setStatus("Please enter your email and password.", "error");
+          return;
+        }
 
-        console.log("📡 Response status:", res.status);
-        const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
-        console.log("📦 Response data:", data);
+        const loginEndpoint = cfg.AUTH_LOGIN_ENDPOINT || cfg.AUTH_ENDPOINT || "";
+        console.log("🌐 Login endpoint:", loginEndpoint);
+        if (!loginEndpoint) {
+          console.error("❌ No login endpoint configured!");
+          setStatus("Sign-in is not available yet. Please contact us for help.", "error");
+          return;
+        }
+
+        const postUrl = getApiUrl(loginEndpoint);
+        console.log("📍 Post URL:", postUrl);
+        if (!postUrl) {
+          console.error("❌ Could not resolve API URL!");
+          setStatus("Sign-in is not available yet. Please contact us for help.", "error");
+          return;
+        }
+
+        setStatus("Signing in...");
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+          console.log("🔐 Attempting login to:", postUrl);
+          const res = await fetch(postUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email, password })
+          });
+
+          console.log("📡 Response status:", res.status);
+          const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
+          console.log("📦 Response data:", data);
         
         if (!res.ok) {
           const errorMsg = data.error || data.message || `Sign-in failed (${res.status})`;
@@ -560,22 +577,29 @@
   }
 
   function setupRegisterForm() {
-    const form = qs("#registerForm");
-    if (!form) return;
+    console.log("📝 Setting up register form...");
+    try {
+      const form = qs("#registerForm");
+      console.log("📝 Form element:", form);
+      if (!form) {
+        console.warn("⚠️ Register form #registerForm not found in DOM!");
+        return;
+      }
 
-    const status = qs("#registerStatus");
-    const verifyStatus = qs("#verifyStatus");
-    const submitBtn = qs("button[type='submit']", form);
-    const step1 = qs("#registerStep1");
-    const step2 = qs("#registerStep2");
-    const verifyCodeBtn = qs("#verifyCodeBtn");
-    const resendCodeBtn = qs("#resendCodeBtn");
-    
-    let registeredEmail = "";
+      const status = qs("#registerStatus");
+      const verifyStatus = qs("#verifyStatus");
+      const submitBtn = qs("button[type='submit']", form);
+      const step1 = qs("#registerStep1");
+      const step2 = qs("#registerStep2");
+      const verifyCodeBtn = qs("#verifyCodeBtn");
+      const resendCodeBtn = qs("#resendCodeBtn");
+      console.log("✓ Register form setup: all elements found");
+      
+      let registeredEmail = "";
 
-    function setStatus(msg, kind="info") {
-      if (!status) return;
-      status.textContent = msg;
+      function setStatus(msg, kind="info") {
+        if (!status) return;
+        status.textContent = msg;
       status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
         kind === "error" ? "text-rose-700" : "text-slate-600");
     }
@@ -588,12 +612,14 @@
     }
 
     form.addEventListener("submit", async (e) => {
+      console.log("🖱️ Register form submitted");
       e.preventDefault();
 
       const fullName = (qs("#rName")?.value || "").trim();
       const email = (qs("#rEmail")?.value || "").trim();
       const phone = (qs("#rPhone")?.value || "").trim();
       const password = (qs("#rPassword")?.value || "").trim();
+      console.log("📧 Registration data:", {fullName, email, phone, passwordLength: password.length});
       const confirm = (qs("#rPasswordConfirm")?.value || "").trim();
       const agree = qs("#rAgree")?.checked || false;
 
@@ -785,6 +811,9 @@
           resendCodeBtn.disabled = false;
         }
       });
+    } catch (err) {
+      console.error("❌ Error setting up register form:", err);
+      console.error(err.stack);
     }
   }
 
@@ -1213,21 +1242,35 @@
   window.HRH_APP = { PRICING };
 
   document.addEventListener("DOMContentLoaded", () => {
-    injectCommon();
-    setupMobileMenu();
-    highlightActiveNav();
-    renderPricingTable();
-    renderBookingServiceOptions();
-    setupBookingForm();
-    setupContactForm();
-    setupRotatingText();
-    setupAuthTabs();
-    setupSignInForm();
-    setupRegisterForm();
-    setupGoogleSignIn();
-    setupPortalApp();
-    setupChatWidget();
-    initMapIfPresent();
-    initFlatpickrIfPresent();
+    console.log("🚀 Starting app initialization");
+    try {
+      injectCommon();
+      setupMobileMenu();
+      highlightActiveNav();
+      renderPricingTable();
+      renderBookingServiceOptions();
+      setupBookingForm();
+      setupContactForm();
+      setupRotatingText();
+      console.log("✅ Basic setup complete, setting up auth");
+      setupAuthTabs();
+      console.log("✅ Auth tabs setup");
+      setupSignInForm();
+      console.log("✅ Sign in form setup");
+      setupRegisterForm();
+      console.log("✅ Register form setup");
+      setupGoogleSignIn();
+      console.log("✅ Google sign in setup");
+      setupPortalApp();
+      console.log("✅ Portal app setup");
+      setupChatWidget();
+      console.log("✅ Chat widget setup");
+      initMapIfPresent();
+      initFlatpickrIfPresent();
+      console.log("✅ App fully initialized");
+    } catch (err) {
+      console.error("❌ Initialization error:", err);
+      console.error(err.stack);
+    }
   });
 })();
