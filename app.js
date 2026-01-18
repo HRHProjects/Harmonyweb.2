@@ -1234,6 +1234,72 @@
     });
   }
 
+  async function loadDynamicServices() {
+    const container = qs("#dynamicServices");
+    if (!container) return;
+
+    try {
+      const endpoint = getApiUrl("/api/services");
+      const res = await fetch(endpoint, {
+        method: "GET",
+        credentials: "omit"
+      });
+
+      if (!res.ok) throw new Error("Failed to load services");
+
+      const result = await res.json();
+      const services = result.data?.featured || [];
+
+      if (services.length === 0) {
+        container.innerHTML = '<p class="text-slate-600 text-sm">No services available at this time.</p>';
+        return;
+      }
+
+      container.innerHTML = services.map(service => `
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <div class="text-sm font-semibold">${escapeHtml(service.name)}</div>
+          <div class="mt-1 text-sm text-slate-700">${escapeHtml(service.price)}</div>
+          <div class="mt-2 text-xs text-slate-600">${escapeHtml(service.description)}</div>
+        </div>
+      `).join("");
+
+    } catch (err) {
+      console.error("Failed to load services:", err);
+      container.innerHTML = '<p class="text-slate-600 text-sm">Unable to load services. Please try again later.</p>';
+    }
+  }
+
+  async function loadServiceCategories() {
+    const container = qs("#serviceCategories");
+    if (!container) return;
+
+    try {
+      const endpoint = getApiUrl("/api/services");
+      const res = await fetch(endpoint, {
+        method: "GET",
+        credentials: "omit"
+      });
+
+      if (!res.ok) throw new Error("Failed to load service categories");
+
+      const result = await res.json();
+      const categories = result.data?.categories || [];
+
+      if (categories.length === 0) return;
+
+      container.innerHTML = categories.map(cat => `
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="text-sm font-semibold">${escapeHtml(cat.name)}</div>
+          <p class="mt-2 text-sm text-slate-600">${escapeHtml(cat.description)}</p>
+          <a class="mt-4 inline-flex items-center text-sm font-medium text-slate-900 hover:underline" href="booking.html">Book →</a>
+        </div>
+      `).join("");
+
+    } catch (err) {
+      console.error("Failed to load service categories:", err);
+    }
+  }
+
   window.HRH_APP = { PRICING };
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -1247,6 +1313,8 @@
       setupBookingForm();
       setupContactForm();
       setupRotatingText();
+      loadDynamicServices();
+      loadServiceCategories();
       console.log("✅ Basic setup complete, setting up auth");
       setupAuthTabs();
       console.log("✅ Auth tabs setup");

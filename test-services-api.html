@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Services API</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Services API Test</h1>
+    
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Featured Services</h2>
+      <div id="featuredServices" class="grid gap-4 md:grid-cols-2">
+        <p class="text-slate-600">Loading...</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Service Categories</h2>
+      <div id="categories" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <p class="text-slate-600">Loading...</p>
+      </div>
+    </div>
+
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <h3 class="font-semibold text-blue-900 mb-2">API Response:</h3>
+      <pre id="apiResponse" class="text-xs text-slate-700 overflow-auto max-h-96"></pre>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://harmonyweb-2.vercel.app/api/services';
+    
+    async function loadServices() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        // Display raw response
+        document.getElementById('apiResponse').textContent = JSON.stringify(data, null, 2);
+        
+        // Display featured services
+        const featuredContainer = document.getElementById('featuredServices');
+        if (data.data?.featured) {
+          featuredContainer.innerHTML = data.data.featured.map(service => `
+            <div class="border border-slate-200 rounded-lg p-4">
+              <h3 class="font-semibold">${service.name}</h3>
+              <p class="text-sm text-slate-600 mt-1">${service.price}</p>
+              <p class="text-xs text-slate-500 mt-2">${service.description}</p>
+              <span class="inline-block mt-2 px-2 py-1 bg-slate-100 text-xs rounded">${service.category}</span>
+            </div>
+          `).join('');
+        }
+        
+        // Display categories
+        const categoriesContainer = document.getElementById('categories');
+        if (data.data?.categories) {
+          categoriesContainer.innerHTML = data.data.categories.map(cat => `
+            <div class="border border-slate-200 rounded-lg p-4">
+              <h3 class="font-semibold">${cat.name}</h3>
+              <p class="text-xs text-slate-500 mt-2">${cat.description}</p>
+            </div>
+          `).join('');
+        }
+        
+      } catch (error) {
+        console.error('Error loading services:', error);
+        document.getElementById('featuredServices').innerHTML = 
+          '<p class="text-red-600">Error loading services: ' + error.message + '</p>';
+        document.getElementById('apiResponse').textContent = 'Error: ' + error.message;
+      }
+    }
+    
+    loadServices();
+  </script>
+</body>
+</html>
