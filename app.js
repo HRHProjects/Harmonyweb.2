@@ -5,6 +5,16 @@
   function qs(sel, root=document) { return root.querySelector(sel); }
   function qsa(sel, root=document) { return Array.from(root.querySelectorAll(sel)); }
 
+  function escapeHtml(s) {
+    return String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+  function escapeAttr(s) { return escapeHtml(s).replace(/\s+/g, " ").trim(); }
+
   function setText(sel, value) {
     qsa(sel).forEach(el => { el.textContent = value; });
   }
@@ -528,8 +538,13 @@
         localStorage.setItem("hrh_auth_session", "true");
         localStorage.setItem("hrh_auth_email", email);
 
-        const target = cfg.PORTAL_URL || "portal/";
-        window.location.href = target;
+        setStatus("Sign-in successful! Redirecting to portal...", "ok");
+        
+        // Redirect to portal
+        setTimeout(() => {
+          const target = cfg.PORTAL_URL || "portal/";
+          window.location.href = target;
+        }, 500);
       } catch (err) {
         setStatus(err.message || "Sign-in failed.", "error");
       } finally {
@@ -748,8 +763,6 @@
       });
     }
   }
-    });
-  }
 
   function setupPortalApp() {
     const root = qs("[data-portal]");
@@ -859,7 +872,7 @@
           <input class="chat-input" type="text" placeholder="Ask about services, hours, booking..." aria-label="Chat message" />
           <button class="chat-send" type="submit" aria-label="Send message">
             <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4">
-              <path fill="currentColor" d="M3 13h14v-2H3v2zm0-6h14V5H3v2zm0 12h14v-2H3v2z"/>
+              <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
             </svg>
           </button>
         </form>
@@ -1048,55 +1061,118 @@
     });
   }
 
-  function escapeHtml(s) {
-    return String(s ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-  function escapeAttr(s) { return escapeHtml(s).replace(/\s+/g, " ").trim(); }
-
   function setupGoogleSignIn() {
     const googleBtn = qs("#googleSignInBtn");
     if (!googleBtn) return;
 
-    googleBtn.addEventListener("click", async () => {
-      const status = qs("#signinStatus");
-      
-      function setStatus(msg, kind="info") {
-        if (!status) return;
-        status.textContent = msg;
-        status.className = "text-sm " + (kind === "ok" ? "text-emerald-700" :
-          kind === "error" ? "text-rose-700" : "text-slate-600");
-      }
+    const status = qs("#signinStatus");
+    
+    function setStatus(msg, kind="info") {
+      if (!status) return;
+      status.textContent = msg;
+      status.className = "text-sm " + (kind === "ok" ? "text-emerald-700" :
+        kind === "error" ? "text-rose-700" : "text-slate-600");
+    }
 
-      setStatus("Google Sign-In coming soon! For now, please create an account with email.", "info");
-      
-      // TODO: Implement Google OAuth
-      // This would require:
-      // 1. Google Cloud Console setup (OAuth 2.0 Client ID)
-      // 2. Google Sign-In JavaScript library
-      // 3. Backend endpoint to verify Google tokens
-      // 4. Store Google user info in verified accounts
-      
-      /* Example implementation:
+    // Check if Google OAuth is enabled and configured
+    const googleClientId = cfg.GOOGLE_CLIENT_ID || "";
+    const googleEnabled = cfg.GOOGLE_OAUTH_ENABLED === true;
+
+    if (!googleEnabled || !googleClientId) {
+      googleBtn.addEventListener("click", () => {
+        setStatus("Google Sign-In is not yet configured. Please use email sign-in or contact admin.", "info");
+      });
+      return;
+    }
+
+    // Initialize Google Sign-In
+    googleBtn.addEventListener("click", async () => {
       try {
-        const googleUser = await google.accounts.oauth2.initTokenClient({
-          client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
-          scope: 'email profile',
+        // Check if Google Identity Services is loaded
+        if (typeof google === 'undefined' || !google.accounts) {
+          setStatus("Google Sign-In library not loaded. Please refresh and try again.", "error");
+          return;
+        }
+
+        setStatus("Initializing Google Sign-In...");
+
+        // Initialize the Google OAuth client
+        const client = google.accounts.oauth2.initTokenClient({
+          client_id: googleClientId,
+          scope: 'email profile openid',
           callback: async (response) => {
-            // Verify token on backend
-            // Create session
-            // Redirect to portal
-          }
+            if (response.error) {
+              setStatus("Google Sign-In failed: " + response.error, "error");
+              return;
+            }
+
+            try {
+              // Get user info from Google
+              const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: {
+                  'Authorization': `Bearer ${response.access_token}`
+                }
+              });
+
+              if (!userInfoResponse.ok) {
+                throw new Error("Failed to get user information from Google");
+              }
+
+              const userInfo = await userInfoResponse.json();
+              const email = userInfo.email;
+              const name = userInfo.name || "";
+
+              // Send to backend for verification and session creation
+              const loginEndpoint = cfg.AUTH_LOGIN_ENDPOINT || cfg.AUTH_ENDPOINT || "";
+              const postUrl = getApiUrl(loginEndpoint);
+
+              const res = await fetch(postUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ 
+                  email, 
+                  googleToken: response.access_token,
+                  googleId: userInfo.sub,
+                  name,
+                  authMethod: "google"
+                })
+              });
+
+              const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
+              
+              if (!res.ok) {
+                const errorMsg = data.error || data.message || `Google Sign-In failed (${res.status})`;
+                throw new Error(errorMsg);
+              }
+
+              // Store session data
+              const token = data.token || data.session || data.jwt || "";
+              if (token) localStorage.setItem("hrh_auth_token", token);
+              localStorage.setItem("hrh_auth_session", "true");
+              localStorage.setItem("hrh_auth_email", email);
+
+              setStatus("Google sign-in successful! Redirecting to portal...", "ok");
+              
+              // Redirect to portal
+              setTimeout(() => {
+                const target = cfg.PORTAL_URL || "portal/";
+                window.location.href = target;
+              }, 500);
+              
+            } catch (err) {
+              setStatus(err.message || "Google Sign-In failed.", "error");
+            }
+          },
         });
-        googleUser.requestAccessToken();
+
+        // Request the access token
+        client.requestAccessToken();
+
       } catch (err) {
         setStatus("Google Sign-In failed. Please try email sign-in.", "error");
+        console.error("Google Sign-In error:", err);
       }
-      */
     });
   }
 
