@@ -484,121 +484,119 @@
 
   function setupSignInForm() {
     console.log("🔑 Setting up sign-in form...");
-    try {
-      const form = qs("#signinForm");
-      console.log("📝 Form element:", form);
-      if (!form) {
-        console.warn("⚠️ Sign-in form #signinForm not found in DOM!");
+    const form = qs("#signinForm");
+    console.log("📝 Form element:", form);
+    if (!form) {
+      console.warn("⚠️ Sign-in form #signinForm not found in DOM!");
+      return;
+    }
+
+    const status = qs("#signinStatus");
+    const submitBtn = qs("button[type='submit']", form);
+    console.log("✓ Form setup: form, status elem, submit btn found");
+
+    function setStatus(msg, kind="info") {
+      if (!status) return;
+      status.textContent = msg;
+      status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
+        kind === "error" ? "text-rose-700" : "text-slate-600");
+    }
+
+    form.addEventListener("submit", async (e) => {
+      console.log("🖱️ Sign-in form submitted");
+      e.preventDefault();
+
+      const email = (qs("#sEmail")?.value || "").trim();
+      const password = (qs("#sPassword")?.value || "").trim();
+      console.log("📧 Email:", email, "Password length:", password.length);
+
+      if (!email || !password) {
+        console.warn("⚠️ Missing email or password");
+        setStatus("Please enter your email and password.", "error");
         return;
       }
 
-      const status = qs("#signinStatus");
-      const submitBtn = qs("button[type='submit']", form);
-      console.log("✓ Form setup: form, status elem, submit btn found");
-
-      function setStatus(msg, kind="info") {
-        if (!status) return;
-        status.textContent = msg;
-        status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
-          kind === "error" ? "text-rose-700" : "text-slate-600");
+      const loginEndpoint = cfg.AUTH_LOGIN_ENDPOINT || cfg.AUTH_ENDPOINT || "";
+      console.log("🌐 Login endpoint:", loginEndpoint);
+      if (!loginEndpoint) {
+        console.error("❌ No login endpoint configured!");
+        setStatus("Sign-in is not available yet. Please contact us for help.", "error");
+        return;
       }
 
-      form.addEventListener("submit", async (e) => {
-        console.log("🖱️ Sign-in form submitted");
-        e.preventDefault();
-
-        const email = (qs("#sEmail")?.value || "").trim();
-        const password = (qs("#sPassword")?.value || "").trim();
-        console.log("📧 Email:", email, "Password length:", password.length);
-
-        if (!email || !password) {
-          console.warn("⚠️ Missing email or password");
-          setStatus("Please enter your email and password.", "error");
-          return;
-        }
-
-        const loginEndpoint = cfg.AUTH_LOGIN_ENDPOINT || cfg.AUTH_ENDPOINT || "";
-        console.log("🌐 Login endpoint:", loginEndpoint);
-        if (!loginEndpoint) {
-          console.error("❌ No login endpoint configured!");
-          setStatus("Sign-in is not available yet. Please contact us for help.", "error");
-          return;
-        }
-
-        const postUrl = getApiUrl(loginEndpoint);
-        console.log("📍 Post URL:", postUrl);
-        if (!postUrl) {
-          console.error("❌ Could not resolve API URL!");
-          setStatus("Sign-in is not available yet. Please contact us for help.", "error");
-          return;
-        }
-
-        setStatus("Signing in...");
-        if (submitBtn) submitBtn.disabled = true;
-
-        try {
-          console.log("🔐 Attempting login to:", postUrl);
-          const res = await fetch(postUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ email, password })
-          });
-
-          console.log("📡 Response status:", res.status);
-          const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
-          console.log("📦 Response data:", data);
-        
-        if (!res.ok) {
-          const errorMsg = data.error || data.message || `Sign-in failed (${res.status})`;
-          throw new Error(errorMsg);
-        }
-
-        const token = data.token || data.session || data.jwt || "";
-        if (token) localStorage.setItem("hrh_auth_token", token);
-        localStorage.setItem("hrh_auth_session", "true");
-        localStorage.setItem("hrh_auth_email", email);
-
-        setStatus("Sign-in successful! Redirecting to portal...", "ok");
-        console.log("✅ Login successful, redirecting to portal");
-        
-        // Redirect to portal
-        setTimeout(() => {
-          const target = cfg.PORTAL_URL || "portal/";
-          window.location.href = target;
-        }, 500);
-      } catch (err) {
-        console.error("❌ Login error:", err);
-        setStatus(err.message || "Sign-in failed.", "error");
-      } finally {
-        if (submitBtn) submitBtn.disabled = false;
+      const postUrl = getApiUrl(loginEndpoint);
+      console.log("📍 Post URL:", postUrl);
+      if (!postUrl) {
+        console.error("❌ Could not resolve API URL!");
+        setStatus("Sign-in is not available yet. Please contact us for help.", "error");
+        return;
       }
+
+      setStatus("Signing in...");
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        console.log("🔐 Attempting login to:", postUrl);
+        const res = await fetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email, password })
+        });
+
+        console.log("📡 Response status:", res.status);
+        const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
+        console.log("📦 Response data:", data);
+      
+      if (!res.ok) {
+        const errorMsg = data.error || data.message || `Sign-in failed (${res.status})`;
+        throw new Error(errorMsg);
+      }
+
+      const token = data.token || data.session || data.jwt || "";
+      if (token) localStorage.setItem("hrh_auth_token", token);
+      localStorage.setItem("hrh_auth_session", "true");
+      localStorage.setItem("hrh_auth_email", email);
+
+      setStatus("Sign-in successful! Redirecting to portal...", "ok");
+      console.log("✅ Login successful, redirecting to portal");
+      
+      // Redirect to portal
+      setTimeout(() => {
+        const target = cfg.PORTAL_URL || "portal/";
+        window.location.href = target;
+      }, 500);
+    } catch (err) {
+      console.error("❌ Login error:", err);
+      setStatus(err.message || "Sign-in failed.", "error");
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
     });
   }
 
   function setupRegisterForm() {
     console.log("📝 Setting up register form...");
-    try {
-      const form = qs("#registerForm");
-      console.log("📝 Form element:", form);
-      if (!form) {
-        console.warn("⚠️ Register form #registerForm not found in DOM!");
-        return;
-      }
+    const form = qs("#registerForm");
+    console.log("📝 Form element:", form);
+    if (!form) {
+      console.warn("⚠️ Register form #registerForm not found in DOM!");
+      return;
+    }
 
-      const status = qs("#registerStatus");
-      const verifyStatus = qs("#verifyStatus");
-      const submitBtn = qs("button[type='submit']", form);
-      const step1 = qs("#registerStep1");
-      const step2 = qs("#registerStep2");
-      const verifyCodeBtn = qs("#verifyCodeBtn");
-      const resendCodeBtn = qs("#resendCodeBtn");
-      console.log("✓ Register form setup: all elements found");
-      
-      let registeredEmail = "";
+    const status = qs("#registerStatus");
+    const verifyStatus = qs("#verifyStatus");
+    const submitBtn = qs("button[type='submit']", form);
+    const step1 = qs("#registerStep1");
+    const step2 = qs("#registerStep2");
+    const verifyCodeBtn = qs("#verifyCodeBtn");
+    const resendCodeBtn = qs("#resendCodeBtn");
+    console.log("✓ Register form setup: all elements found");
+    
+    let registeredEmail = "";
 
-      function setStatus(msg, kind="info") {
-        if (!status) return;
+    function setStatus(msg, kind="info") {
+      if (!status) return;
         status.textContent = msg;
       status.className = "mt-3 text-sm " + (kind === "ok" ? "text-emerald-700" :
         kind === "error" ? "text-rose-700" : "text-slate-600");
@@ -811,9 +809,6 @@
           resendCodeBtn.disabled = false;
         }
       });
-    } catch (err) {
-      console.error("❌ Error setting up register form:", err);
-      console.error(err.stack);
     }
   }
 
