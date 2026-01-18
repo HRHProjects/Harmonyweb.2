@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Debug Auth</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .test { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    button { padding: 10px; margin: 5px; cursor: pointer; }
+    pre { background: #333; color: #0f0; padding: 10px; overflow-x: auto; }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>Auth System Debug</h1>
+
+  <div class="test">
+    <h2>1. Test Config Loading</h2>
+    <button onclick="testConfig()">Test Config</button>
+    <div id="configResult"></div>
+  </div>
+
+  <div class="test">
+    <h2>2. Test Form Elements</h2>
+    <button onclick="testForms()">Test Forms</button>
+    <div id="formsResult"></div>
+  </div>
+
+  <div class="test">
+    <h2>3. Test API Direct (Register)</h2>
+    <button onclick="testRegisterAPI()">Test Register API</button>
+    <div id="registerResult"></div>
+  </div>
+
+  <div class="test">
+    <h2>4. Simulate Form Submission</h2>
+    <button onclick="testFormSubmit()">Simulate Form Submit</button>
+    <div id="submitResult"></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    window.log = function(msg, type = 'info') {
+      console.log(msg);
+      const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+      const div = document.createElement('div');
+      div.style.color = color;
+      div.textContent = msg;
+      return div;
+    };
+
+    function testConfig() {
+      const result = document.getElementById('configResult');
+      result.innerHTML = '';
+      
+      if (!window.HRH_CONFIG) {
+        result.appendChild(window.log('❌ HRH_CONFIG not found!', 'error'));
+        return;
+      }
+      
+      result.appendChild(window.log('✅ HRH_CONFIG loaded', 'success'));
+      result.appendChild(window.log(`API_BASE_URL: ${window.HRH_CONFIG.API_BASE_URL}`));
+      result.appendChild(window.log(`AUTH_LOGIN_ENDPOINT: ${window.HRH_CONFIG.AUTH_LOGIN_ENDPOINT}`));
+      result.appendChild(window.log(`AUTH_REGISTER_ENDPOINT: ${window.HRH_CONFIG.AUTH_REGISTER_ENDPOINT}`));
+    }
+
+    function testForms() {
+      const result = document.getElementById('formsResult');
+      result.innerHTML = '';
+
+      const signinForm = document.getElementById('signinForm');
+      const registerForm = document.getElementById('registerForm');
+
+      result.appendChild(window.log(`Sign-in form found: ${!!signinForm}`, signinForm ? 'success' : 'error'));
+      result.appendChild(window.log(`Register form found: ${!!registerForm}`, registerForm ? 'success' : 'error'));
+
+      if (signinForm) {
+        const sEmail = document.getElementById('sEmail');
+        const sPassword = document.getElementById('sPassword');
+        result.appendChild(window.log(`  - sEmail input found: ${!!sEmail}`, sEmail ? 'success' : 'error'));
+        result.appendChild(window.log(`  - sPassword input found: ${!!sPassword}`, sPassword ? 'success' : 'error'));
+      }
+
+      if (registerForm) {
+        const rName = document.getElementById('rName');
+        const rEmail = document.getElementById('rEmail');
+        result.appendChild(window.log(`  - rName input found: ${!!rName}`, rName ? 'success' : 'error'));
+        result.appendChild(window.log(`  - rEmail input found: ${!!rEmail}`, rEmail ? 'success' : 'error'));
+      }
+    }
+
+    async function testRegisterAPI() {
+      const result = document.getElementById('registerResult');
+      result.innerHTML = '';
+
+      const cfg = window.HRH_CONFIG || {};
+      const apiBase = cfg.API_BASE_URL || '';
+      const endpoint = cfg.AUTH_REGISTER_ENDPOINT || '/api/auth/register';
+      const url = apiBase + endpoint;
+
+      result.appendChild(window.log(`Testing API: ${url}`));
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName: 'Debug User',
+            email: 'debug' + Date.now() + '@example.com',
+            phone: '555-1234',
+            password: 'TestPassword123'
+          })
+        });
+
+        result.appendChild(window.log(`Response status: ${response.status}`, response.ok ? 'success' : 'error'));
+        
+        const data = await response.json();
+        result.appendChild(window.log(`Response:`, 'info'));
+        const pre = document.createElement('pre');
+        pre.textContent = JSON.stringify(data, null, 2);
+        result.appendChild(pre);
+      } catch (err) {
+        result.appendChild(window.log(`❌ Error: ${err.message}`, 'error'));
+      }
+    }
+
+    async function testFormSubmit() {
+      const result = document.getElementById('submitResult');
+      result.innerHTML = '';
+
+      const cfg = window.HRH_CONFIG || {};
+      const apiBase = cfg.API_BASE_URL || '';
+      const endpoint = cfg.AUTH_LOGIN_ENDPOINT || '/api/auth/login';
+      const url = apiBase + endpoint;
+
+      result.appendChild(window.log(`Simulating form submit to: ${url}`));
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: 'test@example.com',
+            password: 'TestPassword123'
+          })
+        });
+
+        result.appendChild(window.log(`Response status: ${response.status}`, response.ok ? 'success' : 'error'));
+        
+        const data = await response.json();
+        result.appendChild(window.log(`Response:`, 'info'));
+        const pre = document.createElement('pre');
+        pre.textContent = JSON.stringify(data, null, 2);
+        result.appendChild(pre);
+      } catch (err) {
+        result.appendChild(window.log(`❌ Error: ${err.message}`, 'error'));
+      }
+    }
+
+    // Auto-test on load
+    window.addEventListener('load', () => {
+      console.log('Debug page loaded');
+      testConfig();
+    });
+  </script>
+</body>
+</html>
