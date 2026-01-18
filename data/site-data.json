@@ -1,0 +1,313 @@
+{
+  "home": {
+    "hero": {
+      "announcement": "Alberta-wide by phone/virtual • Fort McMurray walk-in (residents only)",
+      "headline": "Paperwork, employment, and navigation support delivered online or in person.",
+      "summary": "Harmony Resource Hub is owned and operated by social workers. We help clients organize information, understand requirements in plain language, and produce document-ready results.",
+      "spotlightItems": [
+        "Employment support",
+        "Benefits applications",
+        "Travel documents",
+        "Resume development"
+      ]
+    },
+    "highlights": [
+      {
+        "label": "Delivery",
+        "title": "Virtual Alberta-wide",
+        "description": "Phone and online appointments."
+      },
+      {
+        "label": "In-person",
+        "title": "Fort McMurray only",
+        "description": "Walk-ins for residents only."
+      },
+      {
+        "label": "Approach",
+        "title": "Privacy-first",
+        "description": "Minimal data and clear boundaries."
+      }
+    ],
+    "howItWorks": [
+      {
+        "title": "Request an appointment",
+        "detail": "and select the service you need."
+      },
+      {
+        "title": "We confirm",
+        "detail": "timing and what to bring (checklist)."
+      },
+      {
+        "title": "We deliver",
+        "detail": "document-ready results and next steps."
+      }
+    ],
+    "popularServices": [
+      {
+        "name": "Assessment",
+        "price": "$30 per 30 min (min)",
+        "description": "Clarify what you need, what documents apply, and next steps."
+      },
+      {
+        "name": "EI Application",
+        "price": "$50",
+        "description": "Help organizing information and completing required steps."
+      },
+      {
+        "name": "Resume Development",
+        "price": "$20–$65",
+        "description": "ATS-friendly structure and role-specific language."
+      },
+      {
+        "name": "Commissioning service",
+        "price": "$65–$150+",
+        "description": "Commissioner for Oaths services (where permitted)."
+      }
+    ],
+    "hours": [
+      {
+        "label": "Mon–Fri",
+        "value": "9:30 AM – 7:00 PM"
+      },
+      {
+        "label": "Weekday closure",
+        "value": "12:00 PM – 1:00 PM"
+      },
+      {
+        "label": "Saturday",
+        "value": "10:00 AM – 4:00 PM"
+      },
+      {
+        "label": "Saturday closure",
+        "value": "12:00 PM – 1:00 PM"
+      },
+      {
+        "label": "Sunday",
+        "value": "Closed"
+      }
+    ],
+    "serviceAreaSummary": "We serve Alberta-wide through phone and virtual appointments. Walk-in support is available only to Fort McMurray residents."
+  },
+  "pricing": [
+    {
+      "category": "Employment & Work",
+      "service": "Weekly Newsletter (Job posts)",
+      "price": "N/A"
+    },
+    {
+      "category": "Employment & Work",
+      "service": "Assessment",
+      "price": "$30 per 30 min (min)"
+    },
+    {
+      "category": "Employment & Work",
+      "service": "Resume update",
+      "price": "$10+"
+    },
+    {
+      "category": "Employment & Work",
+      "service": "Resume Development",
+      "price": "$20–$65"
+    },
+    {
+      "category": "Employment & Work",
+      "service": "Job search support",
+      "price": "$20 per 30 min (min)"
+    },
+    {
+      "category": "Employment & Work",
+      "service": "Cover letter",
+      "price": "$10"
+    },
+    {
+      "category": "Employment & Work",
+      "service": "Orientation Support",
+      "price": "$50+"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "Wood Buffalo Lift Application",
+      "price": "$25+"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "Wood Buffalo Housing Application",
+      "price": "$100"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "EI Application",
+      "price": "$50"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "EI Application support",
+      "price": "$50"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "Alberta IS Application Support",
+      "price": "$30 (per visit)"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "Alberta IS",
+      "price": "$50"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "AISH Application",
+      "price": "$65"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "AISH Application Support",
+      "price": "$30"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "Canada Dental Care Application",
+      "price": "$20"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "CPP",
+      "price": "$100"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "OAS",
+      "price": "$100"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "Safety Ticket support",
+      "price": "$50+"
+    },
+    {
+      "category": "Alberta Supports & Benefits",
+      "service": "Community Connections",
+      "price": "$30+"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "IQAS/WES",
+      "price": "$150"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "IRCC Webform",
+      "price": "$20"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "PR Renewal application",
+      "price": "$65"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Lost PR Application",
+      "price": "$65"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Sponsorship supports non-rep (Various)",
+      "price": "$600+"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Visa application",
+      "price": "$400+"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Travel Document Application",
+      "price": "$65 or $95 with PPTC 326"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Child Travel Document Application",
+      "price": "$50"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Consent letter for children traveling abroad",
+      "price": "$50"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "IRCC Application Withdrawal Request",
+      "price": "$30"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Citizenship application",
+      "price": "$150"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Citizenship tracking",
+      "price": "$15"
+    },
+    {
+      "category": "Immigration & Travel (Non-rep)",
+      "service": "Citizenship Test Support (Tech)",
+      "price": "$200"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "Kenyan ETA",
+      "price": "$40"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "US Visa Application",
+      "price": "$75"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "Passport Application",
+      "price": "$65"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "Flight Booking Assistance",
+      "price": "$50+"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "VOS Application",
+      "price": "$50"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "Account Creation/setup/Registration",
+      "price": "$10 per account"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "Call/email assistance",
+      "price": "$40+"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "RSW Letter",
+      "price": "$20+"
+    },
+    {
+      "category": "Travel & Other",
+      "service": "Print Copy of documents",
+      "price": "$1 per 2 pages"
+    },
+    {
+      "category": "Commissioning",
+      "service": "Commissioning service",
+      "price": "$65–$150+"
+    },
+    {
+      "category": "Family & Civil",
+      "service": "Divorce Application",
+      "price": "$900+"
+    }
+  ]
+}

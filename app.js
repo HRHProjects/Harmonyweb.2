@@ -1,7 +1,11 @@
 // app.js
 (function () {
   const cfg = window.HRH_CONFIG || {};
-  console.log("📋 Configuration loaded:", cfg);
+  const logDebug = (...args) => {
+    if (!cfg.DEBUG) return;
+    console.info(...args);
+  };
+  logDebug("📋 Configuration loaded:", cfg);
   if (!cfg.AUTH_LOGIN_ENDPOINT) console.warn("⚠️ AUTH_LOGIN_ENDPOINT not found!");
   if (!cfg.AUTH_REGISTER_ENDPOINT) console.warn("⚠️ AUTH_REGISTER_ENDPOINT not found!");
 
@@ -52,7 +56,7 @@
   }
 
   // Service + pricing data (from your pricing list image)
-  const PRICING = [
+  const DEFAULT_PRICING = [
     { category: "Employment & Work", service: "Weekly Newsletter (Job posts)", price: "N/A" },
     { category: "Employment & Work", service: "Assessment", price: "$30 per 30 min (min)" },
     { category: "Employment & Work", service: "Resume update", price: "$10+" },
@@ -104,12 +108,174 @@
     { category: "Family & Civil", service: "Divorce Application", price: "$900+" }
   ];
 
+  let PRICING = DEFAULT_PRICING;
+
+  const DEFAULT_HOME = {
+    hero: {
+      announcement: "Alberta-wide by phone/virtual • Fort McMurray walk-in (residents only)",
+      headline: "Paperwork, employment, and navigation support delivered online or in person.",
+      summary: "Harmony Resource Hub is owned and operated by social workers. We help clients organize information, understand requirements in plain language, and produce document-ready results.",
+      spotlightItems: ["Employment support", "Benefits applications", "Travel documents", "Resume development"]
+    },
+    highlights: [
+      {
+        label: "Delivery",
+        title: "Virtual Alberta-wide",
+        description: "Phone and online appointments."
+      },
+      {
+        label: "In-person",
+        title: "Fort McMurray only",
+        description: "Walk-ins for residents only."
+      },
+      {
+        label: "Approach",
+        title: "Privacy-first",
+        description: "Minimal data and clear boundaries."
+      }
+    ],
+    howItWorks: [
+      {
+        title: "Request an appointment",
+        detail: "and select the service you need."
+      },
+      {
+        title: "We confirm",
+        detail: "timing and what to bring (checklist)."
+      },
+      {
+        title: "We deliver",
+        detail: "document-ready results and next steps."
+      }
+    ],
+    popularServices: [
+      {
+        name: "Assessment",
+        price: "$30 per 30 min (min)",
+        description: "Clarify what you need, what documents apply, and next steps."
+      },
+      {
+        name: "EI Application",
+        price: "$50",
+        description: "Help organizing information and completing required steps."
+      },
+      {
+        name: "Resume Development",
+        price: "$20–$65",
+        description: "ATS-friendly structure and role-specific language."
+      },
+      {
+        name: "Commissioning service",
+        price: "$65–$150+",
+        description: "Commissioner for Oaths services (where permitted)."
+      }
+    ],
+    hours: [
+      { label: "Mon–Fri", value: "9:30 AM – 7:00 PM" },
+      { label: "Weekday closure", value: "12:00 PM – 1:00 PM" },
+      { label: "Saturday", value: "10:00 AM – 4:00 PM" },
+      { label: "Saturday closure", value: "12:00 PM – 1:00 PM" },
+      { label: "Sunday", value: "Closed" }
+    ],
+    serviceAreaSummary: "We serve Alberta-wide through phone and virtual appointments. Walk-in support is available only to Fort McMurray residents."
+  };
+
   function groupBy(arr, keyFn) {
     return arr.reduce((acc, item) => {
       const key = keyFn(item);
       (acc[key] ||= []).push(item);
       return acc;
     }, {});
+  }
+
+  function mergeHomeData(data) {
+    const safe = data || {};
+    return {
+      ...DEFAULT_HOME,
+      ...safe,
+      hero: { ...DEFAULT_HOME.hero, ...(safe.hero || {}) },
+      highlights: Array.isArray(safe.highlights) && safe.highlights.length ? safe.highlights : DEFAULT_HOME.highlights,
+      howItWorks: Array.isArray(safe.howItWorks) && safe.howItWorks.length ? safe.howItWorks : DEFAULT_HOME.howItWorks,
+      popularServices: Array.isArray(safe.popularServices) && safe.popularServices.length ? safe.popularServices : DEFAULT_HOME.popularServices,
+      hours: Array.isArray(safe.hours) && safe.hours.length ? safe.hours : DEFAULT_HOME.hours
+    };
+  }
+
+  async function loadSiteData() {
+    try {
+      const res = await fetch("data/site-data.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("Unable to load site data");
+      const data = await res.json();
+      const home = mergeHomeData(data.home);
+      const pricing = Array.isArray(data.pricing) && data.pricing.length ? data.pricing : DEFAULT_PRICING;
+      return { home, pricing };
+    } catch (err) {
+      console.warn("⚠️ Falling back to default site data:", err);
+      return { home: DEFAULT_HOME, pricing: DEFAULT_PRICING };
+    }
+  }
+
+  function renderHomeContent(home) {
+    const announcement = qs("[data-home-announcement]");
+    const headline = qs("[data-home-headline]");
+    const summary = qs("[data-home-summary]");
+    const spotlight = qs("[data-home-spotlight]");
+    const highlights = qs("[data-home-highlights]");
+    const steps = qs("[data-home-steps]");
+    const popular = qs("[data-home-popular]");
+    const hours = qs("[data-home-hours]");
+    const serviceArea = qs("[data-home-service-area]");
+
+    if (announcement) announcement.textContent = home.hero.announcement;
+    if (headline) headline.textContent = home.hero.headline;
+    if (summary) summary.textContent = home.hero.summary;
+    if (spotlight) {
+      const items = home.hero.spotlightItems || [];
+      if (items.length) {
+        spotlight.setAttribute("data-rotate-items", items.join("|"));
+        const valueEl = spotlight.querySelector("[data-rotate-value]");
+        if (valueEl) valueEl.textContent = items[0];
+      }
+    }
+
+    if (highlights) {
+      highlights.innerHTML = home.highlights.map(item => `
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div class="text-xs text-slate-500">${escapeHtml(item.label)}</div>
+          <div class="mt-1 text-sm font-semibold">${escapeHtml(item.title)}</div>
+          <div class="mt-1 text-xs text-slate-600">${escapeHtml(item.description)}</div>
+        </div>
+      `).join("");
+    }
+
+    if (steps) {
+      steps.innerHTML = home.howItWorks.map((step, idx) => `
+        <li class="flex gap-3">
+          <span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white text-xs">${idx + 1}</span>
+          <div><span class="font-medium">${escapeHtml(step.title)}</span> ${escapeHtml(step.detail)}</div>
+        </li>
+      `).join("");
+    }
+
+    if (popular) {
+      popular.innerHTML = home.popularServices.map(service => `
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <div class="text-sm font-semibold">${escapeHtml(service.name)}</div>
+          <div class="mt-1 text-sm text-slate-700">${escapeHtml(service.price)}</div>
+          <div class="mt-2 text-xs text-slate-600">${escapeHtml(service.description)}</div>
+        </div>
+      `).join("");
+    }
+
+    if (hours) {
+      hours.innerHTML = home.hours.map(item => `
+        <div class="flex items-center justify-between"><span>${escapeHtml(item.label)}</span><span>${escapeHtml(item.value)}</span></div>
+      `).join("");
+    }
+
+    if (serviceArea) {
+      serviceArea.textContent = home.serviceAreaSummary;
+    }
   }
 
   function renderPricingTable() {
@@ -483,9 +649,9 @@
   }
 
   function setupSignInForm() {
-    console.log("🔑 Setting up sign-in form...");
+    logDebug("🔑 Setting up sign-in form...");
     const form = qs("#signinForm");
-    console.log("📝 Form element:", form);
+    logDebug("📝 Form element:", form);
     if (!form) {
       console.warn("⚠️ Sign-in form #signinForm not found in DOM!");
       return;
@@ -493,7 +659,7 @@
 
     const status = qs("#signinStatus");
     const submitBtn = qs("button[type='submit']", form);
-    console.log("✓ Form setup: form, status elem, submit btn found");
+    logDebug("✓ Form setup: form, status elem, submit btn found");
 
     function setStatus(msg, kind="info") {
       if (!status) return;
@@ -503,12 +669,12 @@
     }
 
     form.addEventListener("submit", async (e) => {
-      console.log("🖱️ Sign-in form submitted");
+      logDebug("🖱️ Sign-in form submitted");
       e.preventDefault();
 
       const email = (qs("#sEmail")?.value || "").trim();
       const password = (qs("#sPassword")?.value || "").trim();
-      console.log("📧 Email:", email, "Password length:", password.length);
+      logDebug("📧 Email:", email, "Password length:", password.length);
 
       if (!email || !password) {
         console.warn("⚠️ Missing email or password");
@@ -517,7 +683,7 @@
       }
 
       const loginEndpoint = cfg.AUTH_LOGIN_ENDPOINT || cfg.AUTH_ENDPOINT || "";
-      console.log("🌐 Login endpoint:", loginEndpoint);
+      logDebug("🌐 Login endpoint:", loginEndpoint);
       if (!loginEndpoint) {
         console.error("❌ No login endpoint configured!");
         setStatus("Sign-in is not available yet. Please contact us for help.", "error");
@@ -525,7 +691,7 @@
       }
 
       const postUrl = getApiUrl(loginEndpoint);
-      console.log("📍 Post URL:", postUrl);
+      logDebug("📍 Post URL:", postUrl);
       if (!postUrl) {
         console.error("❌ Could not resolve API URL!");
         setStatus("Sign-in is not available yet. Please contact us for help.", "error");
@@ -536,7 +702,7 @@
       if (submitBtn) submitBtn.disabled = true;
 
       try {
-        console.log("🔐 Attempting login to:", postUrl);
+        logDebug("🔐 Attempting login to:", postUrl);
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -544,9 +710,9 @@
           body: JSON.stringify({ email, password })
         });
 
-        console.log("📡 Response status:", res.status);
+        logDebug("📡 Response status:", res.status);
         const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
-        console.log("📦 Response data:", data);
+        logDebug("📦 Response data:", data);
       
       if (!res.ok) {
         const errorMsg = data.error || data.message || `Sign-in failed (${res.status})`;
@@ -559,7 +725,7 @@
       localStorage.setItem("hrh_auth_email", email);
 
       setStatus("Sign-in successful! Redirecting to portal...", "ok");
-      console.log("✅ Login successful, redirecting to portal");
+      logDebug("✅ Login successful, redirecting to portal");
       
       // Redirect to portal
       setTimeout(() => {
@@ -576,9 +742,9 @@
   }
 
   function setupRegisterForm() {
-    console.log("📝 Setting up register form...");
+    logDebug("📝 Setting up register form...");
     const form = qs("#registerForm");
-    console.log("📝 Form element:", form);
+    logDebug("📝 Form element:", form);
     if (!form) {
       console.warn("⚠️ Register form #registerForm not found in DOM!");
       return;
@@ -591,7 +757,7 @@
     const step2 = qs("#registerStep2");
     const verifyCodeBtn = qs("#verifyCodeBtn");
     const resendCodeBtn = qs("#resendCodeBtn");
-    console.log("✓ Register form setup: all elements found");
+    logDebug("✓ Register form setup: all elements found");
     
     let registeredEmail = "";
 
@@ -610,14 +776,14 @@
     }
 
     form.addEventListener("submit", async (e) => {
-      console.log("🖱️ Register form submitted");
+      logDebug("🖱️ Register form submitted");
       e.preventDefault();
 
       const fullName = (qs("#rName")?.value || "").trim();
       const email = (qs("#rEmail")?.value || "").trim();
       const phone = (qs("#rPhone")?.value || "").trim();
       const password = (qs("#rPassword")?.value || "").trim();
-      console.log("📧 Registration data:", {fullName, email, phone, passwordLength: password.length});
+      logDebug("📧 Registration data:", {fullName, email, phone, passwordLength: password.length});
       const confirm = (qs("#rPasswordConfirm")?.value || "").trim();
       const agree = qs("#rAgree")?.checked || false;
 
@@ -654,7 +820,7 @@
       if (submitBtn) submitBtn.disabled = true;
 
       try {
-        console.log("📝 Registering new account:", email);
+        logDebug("📝 Registering new account:", email);
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -662,9 +828,9 @@
           body: JSON.stringify({ fullName, email, phone, password })
         });
 
-        console.log("📡 Registration response status:", res.status);
+        logDebug("📡 Registration response status:", res.status);
         const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
-        console.log("📦 Registration response data:", data);
+        logDebug("📦 Registration response data:", data);
         
         if (!res.ok) {
           const errorMsg = data.error || data.message || `Request failed (${res.status})`;
@@ -673,7 +839,7 @@
 
         // Show verification step
         registeredEmail = email;
-        console.log("✅ Registration successful! Showing verification step");
+        logDebug("✅ Registration successful! Showing verification step");
         setStatus(data.message || "✓ Verification code sent to your email!", "ok");
         
         // Switch to step 2
@@ -709,7 +875,7 @@
         verifyCodeBtn.disabled = true;
 
         try {
-          console.log("🔐 Verifying email with code:", code, "for email:", registeredEmail);
+          logDebug("🔐 Verifying email with code:", code, "for email:", registeredEmail);
           const res = await fetch(postUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -717,15 +883,15 @@
             body: JSON.stringify({ email: registeredEmail, code })
           });
 
-          console.log("📡 Verification response status:", res.status);
+          logDebug("📡 Verification response status:", res.status);
           const data = await res.json().catch(() => ({ error: "Invalid response" }));
-          console.log("📦 Verification response data:", data);
+          logDebug("📦 Verification response data:", data);
           
           if (!res.ok) {
             throw new Error(data.error || `Verification failed (${res.status})`);
           }
 
-          console.log("✅ Email verified! Account created successfully");
+          logDebug("✅ Email verified! Account created successfully");
           setVerifyStatus("✓ Email verified! Redirecting to sign in...", "ok");
           
           // Reset form and switch back to login
@@ -771,7 +937,7 @@
       resendCodeBtn.addEventListener("click", async () => {
         if (!registeredEmail) return;
         
-        console.log("🔄 Resending verification code to:", registeredEmail);
+        logDebug("🔄 Resending verification code to:", registeredEmail);
         setVerifyStatus("Resending code...");
         resendCodeBtn.disabled = true;
 
@@ -792,12 +958,12 @@
             })
           });
 
-          console.log("📡 Resend response status:", res.status);
+          logDebug("📡 Resend response status:", res.status);
           const data = await res.json().catch(() => ({}));
-          console.log("📦 Resend response data:", data);
+          logDebug("📦 Resend response data:", data);
           
           if (res.ok) {
-            console.log("✅ Code resent successfully");
+            logDebug("✅ Code resent successfully");
             setVerifyStatus("✓ New code sent to your email!", "ok");
           } else {
             throw new Error(data.error || "Failed to resend code");
@@ -832,7 +998,7 @@
       if (emailEl) {
         if (isDemoMode) {
           emailEl.textContent = "Demo User (Preview Mode)";
-          console.log("🎭 Portal running in DEMO MODE - not authenticated");
+          logDebug("🎭 Portal running in DEMO MODE - not authenticated");
         } else if (email) {
           emailEl.textContent = email;
         }
@@ -1234,12 +1400,15 @@
     });
   }
 
-  window.HRH_APP = { PRICING };
-
-  document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 Starting app initialization");
+  document.addEventListener("DOMContentLoaded", async () => {
+    logDebug("🚀 Starting app initialization");
     try {
+      const siteData = await loadSiteData();
+      PRICING = siteData.pricing;
+      window.HRH_APP = { PRICING, home: siteData.home };
+
       injectCommon();
+      renderHomeContent(siteData.home);
       setupMobileMenu();
       highlightActiveNav();
       renderPricingTable();
@@ -1247,22 +1416,22 @@
       setupBookingForm();
       setupContactForm();
       setupRotatingText();
-      console.log("✅ Basic setup complete, setting up auth");
+      logDebug("✅ Basic setup complete, setting up auth");
       setupAuthTabs();
-      console.log("✅ Auth tabs setup");
+      logDebug("✅ Auth tabs setup");
       setupSignInForm();
-      console.log("✅ Sign in form setup");
+      logDebug("✅ Sign in form setup");
       setupRegisterForm();
-      console.log("✅ Register form setup");
+      logDebug("✅ Register form setup");
       setupGoogleSignIn();
-      console.log("✅ Google sign in setup");
+      logDebug("✅ Google sign in setup");
       setupPortalApp();
-      console.log("✅ Portal app setup");
+      logDebug("✅ Portal app setup");
       setupChatWidget();
-      console.log("✅ Chat widget setup");
+      logDebug("✅ Chat widget setup");
       initMapIfPresent();
       initFlatpickrIfPresent();
-      console.log("✅ App fully initialized");
+      logDebug("✅ App fully initialized");
     } catch (err) {
       console.error("❌ Initialization error:", err);
       console.error(err.stack);
