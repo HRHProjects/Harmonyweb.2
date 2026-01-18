@@ -2,7 +2,9 @@
 
 **🚀 Quick Start:** `npm run setup` - Automated setup, configuration, and deployment!
 
-📚 **[Complete Automation Guide](AUTOMATION_GUIDE.md)** | 🧪 **[Testing Guide](TESTING_GUIDE.md)**
+📚 **[Complete Automation Guide](AUTOMATION_GUIDE.md)** | 🧪 **[Testing Guide](TESTING_GUIDE.md)** | 🔐 **[Real Working Auth System](REAL_WORKING_AUTH.md)** | ⚡ **[10-Min Setup](AUTH_SETUP_10MIN.md)**
+
+> 🎯 **Want working authentication?** Read [AUTH_SETUP_10MIN.md](AUTH_SETUP_10MIN.md) - open registration with email verification!
 
 ## Pages
 - index.html (Home)

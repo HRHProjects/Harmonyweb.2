@@ -520,6 +520,7 @@
       if (submitBtn) submitBtn.disabled = true;
 
       try {
+        console.log("🔐 Attempting login to:", postUrl);
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -527,7 +528,10 @@
           body: JSON.stringify({ email, password })
         });
 
+        console.log("📡 Response status:", res.status);
         const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
+        console.log("📦 Response data:", data);
+        
         if (!res.ok) {
           const errorMsg = data.error || data.message || `Sign-in failed (${res.status})`;
           throw new Error(errorMsg);
@@ -539,6 +543,7 @@
         localStorage.setItem("hrh_auth_email", email);
 
         setStatus("Sign-in successful! Redirecting to portal...", "ok");
+        console.log("✅ Login successful, redirecting to portal");
         
         // Redirect to portal
         setTimeout(() => {
@@ -546,6 +551,7 @@
           window.location.href = target;
         }, 500);
       } catch (err) {
+        console.error("❌ Login error:", err);
         setStatus(err.message || "Sign-in failed.", "error");
       } finally {
         if (submitBtn) submitBtn.disabled = false;
@@ -624,6 +630,7 @@
       if (submitBtn) submitBtn.disabled = true;
 
       try {
+        console.log("📝 Registering new account:", email);
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -631,7 +638,10 @@
           body: JSON.stringify({ fullName, email, phone, password })
         });
 
+        console.log("📡 Registration response status:", res.status);
         const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
+        console.log("📦 Registration response data:", data);
+        
         if (!res.ok) {
           const errorMsg = data.error || data.message || `Request failed (${res.status})`;
           throw new Error(errorMsg);
@@ -639,6 +649,7 @@
 
         // Show verification step
         registeredEmail = email;
+        console.log("✅ Registration successful! Showing verification step");
         setStatus(data.message || "✓ Verification code sent to your email!", "ok");
         
         // Switch to step 2
@@ -646,6 +657,7 @@
         if (step2) step2.classList.remove("hidden");
         
       } catch (err) {
+        console.error("❌ Registration error:", err);
         setStatus(err.message || "Request failed.", "error");
       } finally {
         if (submitBtn) submitBtn.disabled = false;
@@ -673,6 +685,7 @@
         verifyCodeBtn.disabled = true;
 
         try {
+          console.log("🔐 Verifying email with code:", code, "for email:", registeredEmail);
           const res = await fetch(postUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -680,11 +693,15 @@
             body: JSON.stringify({ email: registeredEmail, code })
           });
 
+          console.log("📡 Verification response status:", res.status);
           const data = await res.json().catch(() => ({ error: "Invalid response" }));
+          console.log("📦 Verification response data:", data);
+          
           if (!res.ok) {
             throw new Error(data.error || `Verification failed (${res.status})`);
           }
 
+          console.log("✅ Email verified! Account created successfully");
           setVerifyStatus("✓ Email verified! Redirecting to sign in...", "ok");
           
           // Reset form and switch back to login
@@ -717,6 +734,7 @@
           }, 1500);
           
         } catch (err) {
+          console.error("❌ Verification error:", err);
           setVerifyStatus(err.message || "Verification failed.", "error");
         } finally {
           verifyCodeBtn.disabled = false;
@@ -729,6 +747,7 @@
       resendCodeBtn.addEventListener("click", async () => {
         if (!registeredEmail) return;
         
+        console.log("🔄 Resending verification code to:", registeredEmail);
         setVerifyStatus("Resending code...");
         resendCodeBtn.disabled = true;
 
@@ -749,13 +768,18 @@
             })
           });
 
+          console.log("📡 Resend response status:", res.status);
           const data = await res.json().catch(() => ({}));
+          console.log("📦 Resend response data:", data);
+          
           if (res.ok) {
+            console.log("✅ Code resent successfully");
             setVerifyStatus("✓ New code sent to your email!", "ok");
           } else {
             throw new Error(data.error || "Failed to resend code");
           }
         } catch (err) {
+          console.error("❌ Resend error:", err);
           setVerifyStatus(err.message || "Failed to resend code.", "error");
         } finally {
           resendCodeBtn.disabled = false;
@@ -773,12 +797,22 @@
     const main = qs("#portalMain");
     const email = localStorage.getItem("hrh_auth_email") || "";
     const hasSession = Boolean(localStorage.getItem("hrh_auth_session") || localStorage.getItem("hrh_auth_token"));
+    
+    // Demo mode: Allow preview via ?demo=1 query param (for development/testing)
+    const isDemoMode = new URLSearchParams(window.location.search).get("demo") === "1";
 
-    if (hasSession) {
+    if (hasSession || isDemoMode) {
       gate?.classList.add("hidden");
       main?.classList.remove("hidden");
       const emailEl = qs("[data-portal-email]");
-      if (emailEl && email) emailEl.textContent = email;
+      if (emailEl) {
+        if (isDemoMode) {
+          emailEl.textContent = "Demo User (Preview Mode)";
+          console.log("🎭 Portal running in DEMO MODE - not authenticated");
+        } else if (email) {
+          emailEl.textContent = email;
+        }
+      }
     } else {
       gate?.classList.remove("hidden");
       main?.classList.add("hidden");

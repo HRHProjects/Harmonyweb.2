@@ -137,7 +137,8 @@ async function sendViaResend({ subject, text, html, replyTo, to }) {
     throw err;
   }
 
-  const toEmail = to || process.env.HRH_TO_EMAIL || "admin@harmonyresourcehub.ca";
+  // Use the 'to' parameter for user emails, HRH_TO_EMAIL only for admin copies
+  const toEmail = to;
   const from = process.env.HRH_FROM_EMAIL || "Harmony Resource Hub <noreply@harmonyresourcehub.ca>";
   const prefix = process.env.HRH_SUBJECT_PREFIX ? `${process.env.HRH_SUBJECT_PREFIX} - ` : "";
 
@@ -166,10 +167,15 @@ async function sendViaResend({ subject, text, html, replyTo, to }) {
 
   if (!resp.ok) {
     const msg = await resp.text();
+    console.error("[register] Resend API error:", resp.status, msg);
+    console.error("[register] Sending to:", toEmail);
+    console.error("[register] From:", from);
     const err = new Error(`Email provider error: ${resp.status} ${msg}. Ensure domain is verified in Resend and RESEND_API_KEY is correct.`);
     err.statusCode = 502;
     throw err;
   }
+  
+  console.log("[register] Email sent successfully to:", toEmail);
 }
 
 module.exports = async (req, res) => {
@@ -187,6 +193,8 @@ module.exports = async (req, res) => {
     const phone = clampStr(body.phone, 40);
     const password = clampStr(body.password, 120);
 
+    console.log("[register] New registration attempt - Email:", email);
+
     if (!fullName) return res.status(400).json({ ok: false, error: "Full name is required." });
     if (!isValidEmail(email)) return res.status(400).json({ ok: false, error: "Valid email is required." });
     if (!password || password.length < 8) {
@@ -197,6 +205,8 @@ module.exports = async (req, res) => {
     const verificationCode = generateVerificationCode();
     const expiresAt = Date.now() + (15 * 60 * 1000); // 15 minutes
     const passwordHash = hashPassword(password);
+
+    console.log("[register] Generated verification code:", verificationCode, "for email:", email);
 
     // Store verification code
     verificationCodes.set(email.toLowerCase(), {
