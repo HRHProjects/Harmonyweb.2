@@ -31,5 +31,17 @@ window.HRH_CONFIG = {
 
   // Chat assistant (basic website help)
   CHATBOT_ENABLED: true,
-  CHATBOT_NAME: "HRH Assistant"
+  CHATBOT_NAME: "HRH Assistant",
+
+  // Google OAuth Configuration
+  // To enable Google Sign-In:
+  // 1. Go to Google Cloud Console (console.cloud.google.com)
+  // 2. Create a project or select existing one
+  // 3. Enable Google+ API
+  // 4. Create OAuth 2.0 Client ID (Web application)
+  // 5. Add authorized JavaScript origins: https://harmonyresourcehub.ca, https://www.harmonyresourcehub.ca
+  // 6. Add authorized redirect URIs: https://harmonyresourcehub.ca/signin.html, https://www.harmonyresourcehub.ca/signin.html
+  // 7. Copy the Client ID below
+  GOOGLE_CLIENT_ID: "",  // Add your Google OAuth Client ID here
+  GOOGLE_OAUTH_ENABLED: false  // Set to true once configured
 };
