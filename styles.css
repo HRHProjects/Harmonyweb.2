@@ -355,3 +355,93 @@ main section {
   .spotlight-dot { animation: none; }
   .spotlight-value { transition: none; }
 }
+
+/* Promotional banner and modern service cards */
+.promo-banner {
+  background: linear-gradient(90deg, #0f766e, #0ea5e9 52%, #fb7185);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+}
+.promo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 0.3rem 0.8rem;
+  color: #fff;
+  transition: transform 150ms ease, background 150ms ease;
+}
+.promo-link:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+.metric-card,
+.process-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+}
+.metric-card {
+  padding: 1rem;
+}
+.hero-image-card img {
+  filter: saturate(1.06) contrast(1.02);
+}
+.mini-chip {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  background: #f1f5f9;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #334155;
+}
+.process-card {
+  padding: 1.25rem;
+}
+.process-card span {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.process-card h3 {
+  margin-top: 0.9rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+.process-card p {
+  margin-top: 0.45rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #64748b;
+}
+.dynamic-service-card {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.dynamic-service-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14);
+}
+.service-card-skeleton {
+  min-height: 17rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(90deg, #f8fafc, #e2e8f0, #f8fafc);
+  background-size: 220% 100%;
+  animation: skeletonShift 1.5s ease-in-out infinite;
+}
+@keyframes skeletonShift {
+  0% { background-position: 220% 0; }
+  100% { background-position: -220% 0; }
+}
