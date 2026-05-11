@@ -102,31 +102,26 @@ a { text-underline-offset: 3px; }
 
 /* Logo sizing: larger and responsive for better visibility */
 .logo-badge {
-  width: 64px;
+  width: 112px;
   height: 64px;
+  padding: 6px 10px;
 }
 .logo-img {
-  width: 52px;
-  height: 52px;
+  width: 100%;
+  height: 100%;
 }
 @media (min-width: 640px) {
   .logo-badge {
-    width: 80px;
-    height: 80px;
-  }
-  .logo-img {
-    width: 65px;
-    height: 65px;
+    width: 140px;
+    height: 76px;
+    padding: 7px 12px;
   }
 }
 @media (min-width: 1024px) {
   .logo-badge {
-    width: 88px;
-    height: 88px;
-  }
-  .logo-img {
-    width: 72px;
-    height: 72px;
+    width: 156px;
+    height: 84px;
+    padding: 8px 14px;
   }
 }
 
