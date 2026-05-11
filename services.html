@@ -4,148 +4,85 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Services & Pricing | Harmony Resource Hub</title>
-  <meta name="description" content="Services and non-member pricing for Harmony Resource Hub. Employment support, system navigation, commissioning services (where permitted), and permitted document/form support." />
+  <meta name="description" content="Commissioner for Oaths, immigration administrative support, benefits, housing, family/civil admin, travel document, and system navigation services from Harmony Resource Hub." />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <meta name="theme-color" content="#0f766e" />
   <link rel="icon" type="image/svg+xml" href="art/HRH%20Logo.svg" />
   <link rel="apple-touch-icon" href="art/HRH%20Logo.svg" />
-  
 </head>
 <body class="bg-slate-50 text-slate-900">
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-white focus:text-slate-900 focus:shadow-soft focus:px-4 focus:py-2 focus:rounded-lg">Skip to content</a>
+  <div class="promo-banner">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2 text-center text-sm font-semibold text-white sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:text-left">
+      <span>May commissioning special: 1-page Commissioner for Oaths service with 1 exhibit for just $20.</span>
+      <a class="promo-link" href="/booking" target="_blank" rel="noopener noreferrer">Book the May special →</a>
+    </div>
+  </div>
   <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <div class="flex items-center justify-between py-3">
-        <a href="index.html" class="flex items-center gap-3">
-          <span class="logo-badge inline-flex items-center justify-center rounded-2xl bg-white shadow-soft border border-slate-200">
-            <img src="art/HRH%20Logo.svg" alt="Harmony Resource Hub logo" class="logo-img object-contain">
-          </span>
-          <div class="leading-tight">
-            <div class="text-sm font-semibold tracking-tight" data-brand-name>Harmony Resource Hub</div>
-            <div class="text-xs text-slate-500">Owned & operated by social workers</div>
-          </div>
+        <a href="/" class="flex items-center gap-3">
+          <span class="logo-badge inline-flex items-center justify-center rounded-2xl bg-white shadow-soft border border-slate-200"><img src="art/HRH%20Logo.svg" alt="Harmony Resource Hub logo" class="logo-img object-contain"></span>
+          <div class="leading-tight"><div class="text-sm font-semibold tracking-tight" data-brand-name>Harmony Resource Hub</div><div class="text-xs text-slate-500">Owned & operated by social workers</div></div>
         </a>
-
-        <nav class="hidden lg:flex items-center gap-2 text-sm">
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="index.html">Home</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="services.html">Services</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="booking.html">Booking</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="contact.html">Contact</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="signin.html">Sign in</a>
+        <nav class="hidden lg:flex items-center gap-2 text-sm" aria-label="Primary navigation">
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/" target="_blank" rel="noopener noreferrer">Home</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/services" target="_blank" rel="noopener noreferrer">Services</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/booking" target="_blank" rel="noopener noreferrer">Booking</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/contact" target="_blank" rel="noopener noreferrer">Contact</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/signin" target="_blank" rel="noopener noreferrer">Sign in</a>
         </nav>
-
-        <div class="hidden lg:flex items-center gap-3">
-          <a class="text-sm font-medium text-slate-700 hover:underline" data-phone-tel href="#">
-            <span class="hidden xl:inline">Call </span><span data-phone-display>780-531-4294</span>
-          </a>
-          <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="booking.html">
-            Request an appointment
-          </a>
-        </div>
-
-        <button type="button" class="lg:hidden inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700"
-                data-mobile-menu-button aria-expanded="false" aria-controls="mobileNav">
-          <span class="sr-only">Open menu</span>
-          <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5">
-            <path fill="currentColor" d="M4 6h16v2H4zM4 11h16v2H4zM4 16h16v2H4z"/>
-          </svg>
-        </button>
+        <div class="hidden lg:flex items-center gap-3"><a class="text-sm font-medium text-slate-700 hover:underline" data-phone-tel href="#"><span class="hidden xl:inline">Call </span><span data-phone-display>780-531-4294</span></a><a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="/booking" target="_blank" rel="noopener noreferrer">Request an appointment</a></div>
+        <button type="button" class="lg:hidden inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700" data-mobile-menu-button aria-expanded="false" aria-controls="mobileNav"><span class="sr-only">Open menu</span><svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5"><path fill="currentColor" d="M4 6h16v2H4zM4 11h16v2H4zM4 16h16v2H4z"/></svg></button>
       </div>
-
       <div id="mobileNav" class="hidden pb-4" data-mobile-menu-panel>
         <div class="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-soft">
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="index.html">Home</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="services.html">Services</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="booking.html">Booking</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="contact.html">Contact</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="signin.html">Sign in</a>
-          <a class="rounded-xl bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" href="booking.html">Request an appointment</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/" target="_blank" rel="noopener noreferrer">Home</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/services" target="_blank" rel="noopener noreferrer">Services</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/booking" target="_blank" rel="noopener noreferrer">Booking</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/contact" target="_blank" rel="noopener noreferrer">Contact</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/signin" target="_blank" rel="noopener noreferrer">Sign in</a>
+          <a class="rounded-xl bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" href="/booking" target="_blank" rel="noopener noreferrer">Request an appointment</a>
         </div>
       </div>
     </div>
   </header>
   <main id="main">
     <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-14 pb-10">
-  <div class="max-w-3xl">
-    <h1 class="text-3xl font-semibold tracking-tight">Services & pricing</h1>
-    <p class="mt-3 text-slate-600">
-      We provide paperwork support, employment support, system navigation, and commissioning services (where permitted).
-      We are <span class="font-medium">not immigration consultants or lawyers</span>.
-    </p>
-    <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-900">
-      Non-member pricing shown below • “+” indicates starting price
-    </div>
-  </div>
-</section>
-
-<section class="mx-auto max-w-6xl px-4 sm:px-6 pb-14">
-  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" id="serviceCategories">
-    <!-- Service categories loaded dynamically from /api/services -->
-  </div>
-</section>
-    </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div class="text-sm font-semibold">Commissioning</div>
-      <p class="mt-2 text-sm text-slate-600">Commissioner for Oaths services (where permitted).</p>
-      <a class="mt-4 inline-flex items-center text-sm font-medium text-slate-900 hover:underline" href="booking.html">Book →</a>
-    </div>
-  </div>
-</section>
-
-<section class="mx-auto max-w-6xl px-4 sm:px-6 pb-16">
-  <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h2 class="text-2xl font-semibold tracking-tight">Pricing list</h2>
-        <p class="mt-2 text-slate-600">Open a category to view services and non-member prices.</p>
+      <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">Services & pricing</p>
+          <h1 class="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">Practical support, clearly scoped.</h1>
+          <p class="mt-4 text-lg leading-8 text-slate-600">Explore Commissioner for Oaths services, immigration administrative support, benefits, housing, travel documents, and navigation help. Commissioning and immigration admin support are clearly scoped below.</p>
+          <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"><span class="font-semibold">Important scope:</span> Immigration items are administrative support only. Harmony Resource Hub does not provide immigration consultation, representation, legal advice, or advice about which immigration program to choose.</div>
+        </div>
+        <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80" alt="Documents, pen and calculator representing service paperwork" class="h-[360px] w-full rounded-[32px] border border-white/70 object-cover shadow-soft">
       </div>
-      <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="booking.html">
-        Request an appointment
-      </a>
-    </div>
+    </section>
 
-    <div class="mt-6 grid gap-3" data-pricing-table></div>
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 pb-12">
+      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3" id="serviceCategories" aria-live="polite">
+        <div class="service-card-skeleton"></div><div class="service-card-skeleton"></div><div class="service-card-skeleton"></div>
+      </div>
+    </section>
 
-    <div class="mt-6 text-xs text-slate-500">
-      Prices are shown for non-members. “+” indicates starting price. Final scope and cost are confirmed before work begins.
-    </div>
-  </div>
-</section>
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 pb-16">
+      <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div><h2 class="text-2xl font-semibold tracking-tight">Detailed pricing list</h2><p class="mt-2 text-slate-600">Open a category to view services and non-member prices. “+” indicates starting price.</p></div>
+          <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="/booking" target="_blank" rel="noopener noreferrer">Request an appointment</a>
+        </div>
+        <div class="mt-6 grid gap-3" data-pricing-table></div>
+        <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-6 text-slate-600">Prices are shown for non-members. Final scope and cost are confirmed before work begins. Commissioner for Oaths services are provided only where permitted and do not replace notary public services, legal advice, or document drafting by a lawyer.</div>
+      </div>
+    </section>
   </main>
   <footer class="border-t border-slate-200 bg-white">
-    <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
-      <div class="grid gap-8 md:grid-cols-3">
-        <div>
-          <div class="text-sm font-semibold" data-brand-name>Harmony Resource Hub</div>
-          <div class="mt-2 text-sm text-slate-600">
-            Alberta-wide by phone/virtual. Walk-in support available only to Fort McMurray residents.
-          </div>
-        </div>
-        <div>
-          <div class="text-sm font-semibold">Contact</div>
-          <div class="mt-2 text-sm text-slate-600">
-            <a class="hover:underline" data-email-mailto href="#"><span data-email>admin@harmonyresourcehub.ca</span></a><br>
-            <a class="hover:underline" data-phone-tel href="#"><span data-phone-display>780-531-4294</span></a><br>
-            <span data-address-line1>9914 Morrison St. #15</span><br>
-            <span data-address-line2>Fort McMurray, AB T9H 4A4</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-sm font-semibold">Legal</div>
-          <div class="mt-2 text-sm text-slate-600 space-y-1">
-            <div><a class="hover:underline" href="privacy.html">Privacy Policy</a></div>
-            <div><a class="hover:underline" href="terms.html">Terms of Service</a></div>
-          </div>
-        </div>
-      </div>
-      <div class="mt-8 text-xs text-slate-500">
-        © <span data-year>2026</span> <span data-brand-name>Harmony Resource Hub</span>.
-      </div>
-    </div>
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10"><div class="grid gap-8 md:grid-cols-3"><div><div class="text-sm font-semibold" data-brand-name>Harmony Resource Hub</div><div class="mt-2 text-sm text-slate-600">Alberta-wide by phone/virtual. Walk-in support available only to Fort McMurray residents.</div></div><div><div class="text-sm font-semibold">Contact</div><div class="mt-2 text-sm text-slate-600"><a class="hover:underline" data-email-mailto href="#"><span data-email>admin@harmonyresourcehub.ca</span></a><br><a class="hover:underline" data-phone-tel href="#"><span data-phone-display>780-531-4294</span></a><br><span data-address-line1>9914 Morrison St. #15</span><br><span data-address-line2>Fort McMurray, AB T9H 4A4</span></div></div><div><div class="text-sm font-semibold">Legal</div><div class="mt-2 text-sm text-slate-600 space-y-1"><div><a class="hover:underline" href="/privacy">Privacy Policy</a></div><div><a class="hover:underline" href="/terms">Terms of Service</a></div></div></div></div><div class="mt-8 text-xs text-slate-500">© <span data-year>2026</span> <span data-brand-name>Harmony Resource Hub</span>.</div></div>
   </footer>
   <script src="config.js"></script>
   <script src="app.js"></script>

@@ -3,24 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Harmony Resource Hub | Alberta-wide support (Virtual) + Fort McMurray walk-in</title>
-  <meta name="description" content="Paperwork, employment, and system navigation support. Owned and operated by social workers. Alberta-wide by phone/virtual; walk-in support for Fort McMurray residents only." />
+  <title>Harmony Resource Hub | Alberta document, commissioning & admin support</title>
+  <meta name="description" content="Alberta-wide virtual paperwork, Commissioner for Oaths, immigration admin support, benefits, housing, travel document and system navigation services. Fort McMurray walk-in support for residents only." />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <meta name="theme-color" content="#0f766e" />
   <link rel="icon" type="image/svg+xml" href="art/HRH%20Logo.svg" />
   <link rel="apple-touch-icon" href="art/HRH%20Logo.svg" />
-  
 </head>
 <body class="bg-slate-50 text-slate-900">
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-white focus:text-slate-900 focus:shadow-soft focus:px-4 focus:py-2 focus:rounded-lg">Skip to content</a>
+  <div class="promo-banner">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2 text-center text-sm font-semibold text-white sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:text-left">
+      <span>May commissioning special: 1-page Commissioner for Oaths service with 1 exhibit for just $20.</span>
+      <a class="promo-link" href="/booking" target="_blank" rel="noopener noreferrer">Claim the May offer →</a>
+    </div>
+  </div>
   <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <div class="flex items-center justify-between py-3">
-        <a href="index.html" class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-3">
           <span class="logo-badge inline-flex items-center justify-center rounded-2xl bg-white shadow-soft border border-slate-200">
             <img src="art/HRH%20Logo.svg" alt="Harmony Resource Hub logo" class="logo-img object-contain">
           </span>
@@ -30,19 +35,19 @@
           </div>
         </a>
 
-        <nav class="hidden lg:flex items-center gap-2 text-sm">
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="index.html">Home</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="services.html">Services</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="booking.html">Booking</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="contact.html">Contact</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="signin.html">Sign in</a>
+        <nav class="hidden lg:flex items-center gap-2 text-sm" aria-label="Primary navigation">
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/" target="_blank" rel="noopener noreferrer">Home</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/services" target="_blank" rel="noopener noreferrer">Services</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/booking" target="_blank" rel="noopener noreferrer">Booking</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/contact" target="_blank" rel="noopener noreferrer">Contact</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/signin" target="_blank" rel="noopener noreferrer">Sign in</a>
         </nav>
 
         <div class="hidden lg:flex items-center gap-3">
           <a class="text-sm font-medium text-slate-700 hover:underline" data-phone-tel href="#">
             <span class="hidden xl:inline">Call </span><span data-phone-display>780-531-4294</span>
           </a>
-          <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="booking.html">
+          <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="/booking" target="_blank" rel="noopener noreferrer">
             Request an appointment
           </a>
         </div>
@@ -58,192 +63,126 @@
 
       <div id="mobileNav" class="hidden pb-4" data-mobile-menu-panel>
         <div class="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-soft">
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="index.html">Home</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="services.html">Services</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="booking.html">Booking</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="contact.html">Contact</a>
-          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="signin.html">Sign in</a>
-          <a class="rounded-xl bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" href="booking.html">Request an appointment</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/" target="_blank" rel="noopener noreferrer">Home</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/services" target="_blank" rel="noopener noreferrer">Services</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/booking" target="_blank" rel="noopener noreferrer">Booking</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/contact" target="_blank" rel="noopener noreferrer">Contact</a>
+          <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/signin" target="_blank" rel="noopener noreferrer">Sign in</a>
+          <a class="rounded-xl bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" href="/booking" target="_blank" rel="noopener noreferrer">Request an appointment</a>
         </div>
       </div>
     </div>
   </header>
+
   <main id="main">
     <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-14 pb-10">
-  <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
-    <div class="space-y-6">
-      <div class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-900 accent-pill">
-        Alberta-wide by phone/virtual • Fort McMurray walk-in (residents only)
-      </div>
+      <div class="grid gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:items-center">
+        <div class="space-y-6">
+          <div class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-900 accent-pill">
+            Alberta-wide virtual support • Fort McMurray walk-in for residents
+          </div>
 
-      <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">
-        Paperwork, employment, and navigation support delivered online or in person.
-      </h1>
+          <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+            Confident paperwork support for life’s important next steps.
+          </h1>
 
-      <p class="text-base sm:text-lg text-slate-600">
-        <span data-brand-name>Harmony Resource Hub</span> is owned and operated by social workers. We help clients organize information,
-        understand requirements in plain language, and produce document-ready results.
-      </p>
+          <p class="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
+            <span data-brand-name>Harmony Resource Hub</span> helps clients prepare, organize, and submit document-ready packages for commissioning, immigration admin support, benefits, housing, travel documents, and system navigation—without legal advice or immigration consultation.
+          </p>
 
-      <div class="spotlight-pill" data-rotate-text data-rotate-items="Employment support|Benefits applications|Travel documents|Resume development">
-        <span class="spotlight-dot"></span>
-        <span>Service spotlight:</span>
-        <span class="spotlight-value" data-rotate-value aria-live="polite">Employment support</span>
-      </div>
+          <div class="spotlight-pill" data-rotate-text data-rotate-items="Commissioning documents|Immigration admin support|Benefits applications|Travel document support|Housing forms">
+            <span class="spotlight-dot"></span>
+            <span>Service spotlight:</span>
+            <span class="spotlight-value" data-rotate-value aria-live="polite">Commissioning documents</span>
+          </div>
 
-      <div class="flex flex-wrap gap-3">
-        <a class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-white shadow-soft hover:bg-slate-800" href="booking.html">
-          Request an appointment
-        </a>
-        <a class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-slate-900 hover:bg-slate-50" href="services.html">
-          View services & pricing
-        </a>
-      </div>
+          <div class="flex flex-wrap gap-3">
+            <a class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-white shadow-soft hover:bg-slate-800" href="/booking" target="_blank" rel="noopener noreferrer">
+              Request an appointment
+            </a>
+            <a class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-slate-900 hover:bg-slate-50" href="/services" target="_blank" rel="noopener noreferrer">
+              View services & pricing
+            </a>
+          </div>
 
-      <div class="grid gap-3 sm:grid-cols-3">
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div class="text-xs text-slate-500">Delivery</div>
-          <div class="mt-1 text-sm font-semibold">Virtual Alberta-wide</div>
-          <div class="mt-1 text-xs text-slate-600">Phone and online appointments.</div>
-        </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div class="text-xs text-slate-500">In-person</div>
-          <div class="mt-1 text-sm font-semibold">Fort McMurray only</div>
-          <div class="mt-1 text-xs text-slate-600">Walk-ins for residents only.</div>
-        </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div class="text-xs text-slate-500">Approach</div>
-          <div class="mt-1 text-sm font-semibold">Privacy-first</div>
-          <div class="mt-1 text-xs text-slate-600">Minimal data and clear boundaries.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="relative">
-      <div class="absolute -inset-6 rounded-[32px] hero-glow blur-2xl"></div>
-      <div class="relative rounded-[28px] border border-slate-200 bg-white p-6 shadow-soft hero-card">
-        <div class="text-sm font-semibold">How it works</div>
-        <ol class="mt-4 space-y-3 text-sm text-slate-700">
-          <li class="flex gap-3">
-            <span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white text-xs">1</span>
-            <div><span class="font-medium">Request an appointment</span> and select the service you need.</div>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white text-xs">2</span>
-            <div><span class="font-medium">We confirm</span> timing and what to bring (checklist).</div>
-          </li>
-          <li class="flex gap-3">
-            <span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white text-xs">3</span>
-            <div><span class="font-medium">We deliver</span> document-ready results and next steps.</div>
-          </li>
-        </ol>
-
-        <div class="mt-6 rounded-2xl border border-brand-200 bg-brand-50 p-4 text-sm text-brand-900">
-          For appointment requests, do not include sensitive details (e.g., SIN, passport numbers, banking info).
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="metric-card"><div class="text-xs text-slate-500">Delivery</div><div class="mt-1 text-sm font-semibold">Virtual Alberta-wide</div><div class="mt-1 text-xs text-slate-600">Phone and online appointments.</div></div>
+            <div class="metric-card"><div class="text-xs text-slate-500">Local access</div><div class="mt-1 text-sm font-semibold">Fort McMurray</div><div class="mt-1 text-xs text-slate-600">Walk-in support for residents.</div></div>
+            <div class="metric-card"><div class="text-xs text-slate-500">Boundaries</div><div class="mt-1 text-sm font-semibold">Admin support only</div><div class="mt-1 text-xs text-slate-600">Clear scope before work starts.</div></div>
+          </div>
         </div>
 
-        <div class="mt-6 flex flex-wrap items-center gap-3">
-          <a class="inline-flex items-center rounded-xl bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800" href="booking.html">Start booking</a>
-          <a class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50" href="contact.html">Contact</a>
+        <div class="relative">
+          <div class="absolute -inset-6 rounded-[32px] hero-glow blur-2xl"></div>
+          <figure class="hero-image-card relative overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-soft">
+            <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80" alt="Harmony Resource Hub client support desk with documents and laptop" class="h-[520px] w-full object-cover">
+            <figcaption class="absolute inset-x-4 bottom-4 rounded-3xl border border-white/40 bg-white/90 p-5 shadow-soft backdrop-blur">
+              <div class="text-sm font-bold text-slate-900">Document-ready support, step by step</div>
+              <p class="mt-2 text-sm leading-6 text-slate-600">Bring your forms, ID, exhibits, and questions. We help organize the process and confirm next steps in plain language.</p>
+              <div class="mt-4 grid gap-2 sm:grid-cols-3">
+                <span class="mini-chip">Commissioning</span>
+                <span class="mini-chip">Immigration admin</span>
+                <span class="mini-chip">Benefits</span>
+              </div>
+            </figcaption>
+          </figure>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="mx-auto max-w-6xl px-4 sm:px-6 pb-14">
-  <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
-    <div class="grid gap-8 lg:grid-cols-3">
-      <div class="lg:col-span-1">
-        <h2 class="text-2xl font-semibold tracking-tight">Popular services</h2>
-        <p class="mt-2 text-slate-600">A small set of commonly requested services. Full pricing is on the Services page.</p>
-        <div class="mt-4">
-          <a class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50" href="services.html">
-            See all services & pricing
-          </a>
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 pb-14">
+      <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-brand-700">Popular support pathways</p>
+            <h2 class="mt-2 text-2xl font-semibold tracking-tight">Services that move with your needs</h2>
+            <p class="mt-2 max-w-2xl text-slate-600">A dynamic snapshot of frequently requested services. Full categories and prices are on the Services page.</p>
+          </div>
+          <a class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50" href="/services" target="_blank" rel="noopener noreferrer">See all services →</a>
         </div>
-      </div>
 
-      <div class="lg:col-span-2 grid gap-4 md:grid-cols-2" id="dynamicServices">
-        <!-- Services loaded dynamically from /api/services -->
-          <div class="mt-2 text-xs text-slate-600">ATS-friendly structure and role-specific language.</div>
-        </div>
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-          <div class="text-sm font-semibold">Passport Renewal Support</div>
-          <div class="mt-1 text-sm text-slate-700">$40+</div>
-          <div class="mt-2 text-xs text-slate-600">Document checklist and form completion assistance.</div>
+        <div class="mt-8 grid gap-5 md:grid-cols-2" id="dynamicServices" aria-live="polite">
+          <div class="service-card-skeleton"></div>
+          <div class="service-card-skeleton"></div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="mx-auto max-w-6xl px-4 sm:px-6 pb-16">
-  <div class="grid gap-6 lg:grid-cols-2 lg:items-center">
-    <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
-      <h2 class="text-2xl font-semibold tracking-tight">Hours</h2>
-      <div class="mt-4 grid gap-2 text-sm text-slate-700">
-        <div class="flex items-center justify-between"><span>Mon–Fri</span><span>9:30 AM – 7:00 PM</span></div>
-        <div class="flex items-center justify-between"><span>Weekday closure</span><span>12:00 PM – 1:00 PM</span></div>
-        <div class="flex items-center justify-between"><span>Saturday</span><span>10:00 AM – 4:00 PM</span></div>
-        <div class="flex items-center justify-between"><span>Saturday closure</span><span>12:00 PM – 1:00 PM</span></div>
-        <div class="flex items-center justify-between"><span>Sunday</span><span>Closed</span></div>
-      </div>
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800" href="booking.html">Request an appointment</a>
-        <a class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50" href="contact.html">Directions & contact</a>
-      </div>
-    </div>
-
-    <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-brand-50 via-white to-sky-50 p-8 shadow-soft">
-      <h2 class="text-2xl font-semibold tracking-tight">Service area</h2>
-      <p class="mt-3 text-slate-700">
-        We serve Alberta-wide through phone and virtual appointments.
-        Walk-in support is available only to Fort McMurray residents.
-      </p>
-      <div class="mt-4 text-sm text-slate-700">
-        Address (Fort McMurray): <span class="font-medium" data-address-line1></span>, <span data-address-line2></span>
-      </div>
-      <div class="mt-6 rounded-2xl bg-white p-5 border border-slate-200">
-        <div class="text-sm font-semibold">Fast contact</div>
-        <div class="mt-2 text-sm text-slate-700">
-          Email: <a class="hover:underline" data-email-mailto href="#"><span data-email></span></a><br>
-          Phone: <a class="hover:underline" data-phone-tel href="#"><span data-phone-display></span></a>
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 pb-16">
+      <div class="grid gap-6 lg:grid-cols-3">
+        <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft lg:col-span-2">
+          <h2 class="text-2xl font-semibold tracking-tight">How it works</h2>
+          <div class="mt-6 grid gap-4 md:grid-cols-3">
+            <div class="process-card"><span>1</span><h3>Choose a service</h3><p>Select commissioning, immigration admin support, benefits, housing, travel or navigation help.</p></div>
+            <div class="process-card"><span>2</span><h3>Confirm checklist</h3><p>We outline what to bring or upload, including ID, forms, exhibits, and supporting documents.</p></div>
+            <div class="process-card"><span>3</span><h3>Complete the task</h3><p>We provide document-ready admin support and confirm next-step instructions within scope.</p></div>
+          </div>
+          <div class="mt-6 rounded-2xl border border-brand-200 bg-brand-50 p-4 text-sm text-brand-900">Please do not include sensitive details such as SINs, passport numbers, or banking information in appointment requests.</div>
         </div>
+
+        <aside class="rounded-3xl border border-slate-200 bg-gradient-to-br from-brand-50 via-white to-sky-50 p-8 shadow-soft">
+          <h2 class="text-2xl font-semibold tracking-tight">Hours & service area</h2>
+          <div class="mt-4 grid gap-2 text-sm text-slate-700">
+            <div class="flex items-center justify-between"><span>Mon–Fri</span><span>9:30 AM – 7:00 PM</span></div>
+            <div class="flex items-center justify-between"><span>Lunch closure</span><span>12:00 PM – 1:00 PM</span></div>
+            <div class="flex items-center justify-between"><span>Saturday</span><span>10:00 AM – 4:00 PM</span></div>
+            <div class="flex items-center justify-between"><span>Sunday</span><span>Closed</span></div>
+          </div>
+          <p class="mt-5 text-sm leading-6 text-slate-700">Virtual service is available across Alberta. Walk-in support is available only to Fort McMurray residents.</p>
+          <div class="mt-5 text-sm text-slate-700"><span class="font-medium" data-address-line1></span><br><span data-address-line2></span></div>
+        </aside>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
   </main>
+
   <footer class="border-t border-slate-200 bg-white">
     <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
       <div class="grid gap-8 md:grid-cols-3">
-        <div>
-          <div class="text-sm font-semibold" data-brand-name>Harmony Resource Hub</div>
-          <div class="mt-2 text-sm text-slate-600">
-            Alberta-wide by phone/virtual. Walk-in support available only to Fort McMurray residents.
-          </div>
-        </div>
-        <div>
-          <div class="text-sm font-semibold">Contact</div>
-          <div class="mt-2 text-sm text-slate-600">
-            <a class="hover:underline" data-email-mailto href="#"><span data-email>admin@harmonyresourcehub.ca</span></a><br>
-            <a class="hover:underline" data-phone-tel href="#"><span data-phone-display>780-531-4294</span></a><br>
-            <span data-address-line1>9914 Morrison St. #15</span><br>
-            <span data-address-line2>Fort McMurray, AB T9H 4A4</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-sm font-semibold">Legal</div>
-          <div class="mt-2 text-sm text-slate-600 space-y-1">
-            <div><a class="hover:underline" href="privacy.html">Privacy Policy</a></div>
-            <div><a class="hover:underline" href="terms.html">Terms of Service</a></div>
-          </div>
-        </div>
+        <div><div class="text-sm font-semibold" data-brand-name>Harmony Resource Hub</div><div class="mt-2 text-sm text-slate-600">Alberta-wide by phone/virtual. Walk-in support available only to Fort McMurray residents.</div></div>
+        <div><div class="text-sm font-semibold">Contact</div><div class="mt-2 text-sm text-slate-600"><a class="hover:underline" data-email-mailto href="#"><span data-email>admin@harmonyresourcehub.ca</span></a><br><a class="hover:underline" data-phone-tel href="#"><span data-phone-display>780-531-4294</span></a><br><span data-address-line1>9914 Morrison St. #15</span><br><span data-address-line2>Fort McMurray, AB T9H 4A4</span></div></div>
+        <div><div class="text-sm font-semibold">Legal</div><div class="mt-2 text-sm text-slate-600 space-y-1"><div><a class="hover:underline" href="/privacy">Privacy Policy</a></div><div><a class="hover:underline" href="/terms">Terms of Service</a></div></div></div>
       </div>
-      <div class="mt-8 text-xs text-slate-500">
-        © <span data-year>2026</span> <span data-brand-name>Harmony Resource Hub</span>.
-      </div>
+      <div class="mt-8 text-xs text-slate-500">© <span data-year>2026</span> <span data-brand-name>Harmony Resource Hub</span>.</div>
     </div>
   </footer>
   <script src="config.js"></script>

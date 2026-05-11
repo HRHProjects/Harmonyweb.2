@@ -1,7 +1,5 @@
-// app.js
 (function () {
   const cfg = window.HRH_CONFIG || {};
-  console.log("📋 Configuration loaded:", cfg);
   if (!cfg.AUTH_LOGIN_ENDPOINT) console.warn("⚠️ AUTH_LOGIN_ENDPOINT not found!");
   if (!cfg.AUTH_REGISTER_ENDPOINT) console.warn("⚠️ AUTH_REGISTER_ENDPOINT not found!");
 
@@ -53,57 +51,45 @@
 
   // Service + pricing data (from your pricing list image)
   const PRICING = [
-    { category: "Employment & Work", service: "Weekly Newsletter (Job posts)", price: "N/A" },
-    { category: "Employment & Work", service: "Assessment", price: "$30 per 30 min (min)" },
-    { category: "Employment & Work", service: "Resume update", price: "$10+" },
-    { category: "Employment & Work", service: "Resume Development", price: "$20–$65" },
-    { category: "Employment & Work", service: "Job search support", price: "$20 per 30 min (min)" },
-    { category: "Employment & Work", service: "Cover letter", price: "$10" },
-    { category: "Employment & Work", service: "Orientation Support", price: "$50+" },
+    { category: "Commissioner for Oaths (Alberta)", service: "May special: 1-page document + 1 exhibit", price: "$20 (May only)", description: "Administer an oath, affirmation, affidavit, or statutory declaration where permitted in Alberta.", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80" },
+    { category: "Commissioner for Oaths (Alberta)", service: "Affidavits and solemn/statutory declarations", price: "$25+", description: "Take and receive affidavits, affirmations, declarations, and attest the commissioned document.", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80" },
+    { category: "Commissioner for Oaths (Alberta)", service: "Exhibits attached to commissioned documents", price: "$10+ per additional exhibit", description: "Mark and attach exhibits connected to an affidavit or declaration where appropriate.", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=80" },
+    { category: "Commissioner for Oaths (Alberta)", service: "Government, benefit, insurance, school or housing declarations", price: "$25+", description: "Commission eligible Alberta-use declarations and sworn statements after identity review.", image: "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=900&q=80" },
 
-    { category: "Alberta Supports & Benefits", service: "Wood Buffalo Lift Application", price: "$25+" },
-    { category: "Alberta Supports & Benefits", service: "Wood Buffalo Housing Application", price: "$100" },
-    { category: "Alberta Supports & Benefits", service: "EI Application", price: "$50" },
-    { category: "Alberta Supports & Benefits", service: "EI Application support", price: "$50" },
-    { category: "Alberta Supports & Benefits", service: "Alberta IS Application Support", price: "$30 (per visit)" },
-    { category: "Alberta Supports & Benefits", service: "Alberta IS", price: "$50" },
-    { category: "Alberta Supports & Benefits", service: "AISH Application", price: "$65" },
-    { category: "Alberta Supports & Benefits", service: "AISH Application Support", price: "$30" },
-    { category: "Alberta Supports & Benefits", service: "Canada Dental Care Application", price: "$20" },
-    { category: "Alberta Supports & Benefits", service: "CPP", price: "$100" },
-    { category: "Alberta Supports & Benefits", service: "OAS", price: "$100" },
-    { category: "Alberta Supports & Benefits", service: "Safety Ticket support", price: "$50+" },
-    { category: "Alberta Supports & Benefits", service: "Community Connections", price: "$30+" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "IRCC secure account setup and document upload support", price: "$40+", description: "Administrative and technical support only; no program selection, strategy, representation, or legal advice.", image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "IRCC webform support", price: "$20", description: "Help formatting and submitting client-provided updates or documents through the webform.", image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "PR card renewal admin package", price: "$65", description: "Checklist, form-entry support from client-provided information, scan review, and upload organization.", image: "https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "Lost/stolen PR card replacement admin package", price: "$65", description: "Administrative assistance organizing the replacement package using client-provided details.", image: "https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "Citizenship application admin support", price: "$150", description: "Document checklist, portal navigation, form-entry support, and package organization.", image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "Citizenship tracker and status check support", price: "$15", description: "Technical assistance accessing client accounts and reading status screens with the client.", image: "https://images.unsplash.com/photo-1516321165247-4aa89a48be28?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "Citizenship test technical support", price: "$200", description: "Technology readiness, account access, and non-substantive test-day setup support.", image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "Application withdrawal request admin support", price: "$30", description: "Help preparing a client-directed withdrawal request for submission.", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "IQAS/WES credential assessment admin support", price: "$150", description: "Account setup, document checklist, upload organization, and courier/admin coordination.", image: "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "Visa application admin support", price: "$400+", description: "Client-directed form-entry and document organization only; no eligibility advice or representation.", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=900&q=80" },
+    { category: "Immigration Admin Support (Non-advisory)", service: "Sponsorship package admin support", price: "$600+", description: "Administrative checklist and package assembly from client-provided information; non-representative support only.", image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=80" },
 
-    { category: "Immigration & Travel (Non-rep)", service: "IQAS/WES", price: "$150" },
-    { category: "Immigration & Travel (Non-rep)", service: "IRCC Webform", price: "$20" },
-    { category: "Immigration & Travel (Non-rep)", service: "PR Renewal application", price: "$65" },
-    { category: "Immigration & Travel (Non-rep)", service: "Lost PR Application", price: "$65" },
-    { category: "Immigration & Travel (Non-rep)", service: "Sponsorship supports non-rep (Various)", price: "$600+" },
-    { category: "Immigration & Travel (Non-rep)", service: "Visa application", price: "$400+" },
-    { category: "Immigration & Travel (Non-rep)", service: "Travel Document Application", price: "$65 or $95 with PPTC 326" },
-    { category: "Immigration & Travel (Non-rep)", service: "Child Travel Document Application", price: "$50" },
-    { category: "Immigration & Travel (Non-rep)", service: "Consent letter for children traveling abroad", price: "$50" },
-    { category: "Immigration & Travel (Non-rep)", service: "IRCC Application Withdrawal Request", price: "$30" },
-    { category: "Immigration & Travel (Non-rep)", service: "Citizenship application", price: "$150" },
-    { category: "Immigration & Travel (Non-rep)", service: "Citizenship tracking", price: "$15" },
-    { category: "Immigration & Travel (Non-rep)", service: "Citizenship Test Support (Tech)", price: "$200" },
+    { category: "Benefits & Community Supports", service: "Wood Buffalo Lift application", price: "$25+", description: "Form and document organization support for local transportation assistance.", image: "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=900&q=80" },
+    { category: "Benefits & Community Supports", service: "Wood Buffalo Housing application", price: "$100", description: "Application package support, document checklist, and follow-up organization.", image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80" },
+    { category: "Benefits & Community Supports", service: "EI application admin support", price: "$50", description: "Help organizing information and completing client-directed application steps.", image: "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=900&q=80" },
+    { category: "Benefits & Community Supports", service: "Alberta Income Support admin support", price: "$30 per visit / $50 package", description: "Application navigation and document organization support.", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=80" },
+    { category: "Benefits & Community Supports", service: "AISH application admin support", price: "$65 package / $30 support", description: "Checklist, form support, and package organization for client-provided information.", image: "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=900&q=80" },
+    { category: "Benefits & Community Supports", service: "Canada Dental Care Plan application", price: "$20", description: "Account and form support for eligible clients.", image: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=900&q=80" },
+    { category: "Benefits & Community Supports", service: "CPP/OAS application admin support", price: "$100", description: "Document checklist and application navigation support.", image: "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=900&q=80" },
+    { category: "Benefits & Community Supports", service: "Community connections and system navigation", price: "$30+", description: "Help identifying offices, forms, contact paths, and next-step checklists.", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80" },
 
-    { category: "Travel & Other", service: "Kenyan ETA", price: "$40" },
-    { category: "Travel & Other", service: "US Visa Application", price: "$75" },
-    { category: "Travel & Other", service: "Passport Application", price: "$65" },
-    { category: "Travel & Other", service: "Flight Booking Assistance", price: "$50+" },
-    { category: "Travel & Other", service: "VOS Application", price: "$50" },
-    { category: "Travel & Other", service: "Account Creation/setup/Registration", price: "$10 per account" },
-    { category: "Travel & Other", service: "Call/email assistance", price: "$40+" },
-    { category: "Travel & Other", service: "RSW Letter", price: "$20+" },
-    { category: "Travel & Other", service: "Print Copy of documents", price: "$1 per 2 pages" },
+    { category: "Travel & Identity Documents", service: "Passport application or renewal admin support", price: "$65 application / $40+ renewal", description: "Checklist, form completion support, photo and guarantor requirement review.", image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=900&q=80" },
+    { category: "Travel & Identity Documents", service: "Travel Document application", price: "$65 or $95 with PPTC 326", description: "Administrative support preparing travel document materials.", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=900&q=80" },
+    { category: "Travel & Identity Documents", service: "Child travel document application", price: "$50", description: "Parent/guardian document checklist and package support.", image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80" },
+    { category: "Travel & Identity Documents", service: "Consent letter for children travelling abroad", price: "$50", description: "Template support and commissioning coordination where appropriate.", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80" },
+    { category: "Travel & Identity Documents", service: "Kenyan ETA admin support", price: "$40", description: "Administrative and technical assistance for client-directed ETA submission.", image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=900&q=80" },
+    { category: "Travel & Identity Documents", service: "US visa application admin support", price: "$75", description: "Client-directed form-entry and appointment navigation support only.", image: "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=900&q=80" },
+    { category: "Travel & Identity Documents", service: "Flight booking assistance", price: "$50+", description: "Administrative booking support based on client-selected itinerary preferences.", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=900&q=80" },
 
-    { category: "Commissioning", service: "Commissioning service", price: "$65–$150+" },
-
-    { category: "Family & Civil", service: "Divorce Application", price: "$900+" }
+    { category: "Housing, Family & Civil Admin", service: "Housing forms and rental application package", price: "$50+", description: "Document organization, form-entry support, and checklist preparation.", image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80" },
+    { category: "Housing, Family & Civil Admin", service: "Family/civil form administrative support", price: "$100+", description: "Administrative form support only; no legal advice, legal drafting, or representation.", image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=900&q=80" },
+    { category: "Housing, Family & Civil Admin", service: "Divorce application administrative package", price: "$900+", description: "Client-directed document organization and form-entry support only; independent legal advice is recommended.", image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=900&q=80" },
+    { category: "Housing, Family & Civil Admin", service: "Letters, calls, email and account setup", price: "$10–$40+", description: "Administrative support for accounts, basic correspondence, printing, and follow-up tracking.", image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80" }
   ];
-
   function groupBy(arr, keyFn) {
     return arr.reduce((acc, item) => {
       const key = keyFn(item);
@@ -124,6 +110,7 @@
         <tr class="border-b border-slate-200/70 last:border-b-0">
           <td class="py-3 pr-3 align-top">
             <div class="font-medium text-slate-900">${escapeHtml(x.service)}</div>
+            ${x.description ? `<div class="mt-1 text-xs leading-5 text-slate-500">${escapeHtml(x.description)}</div>` : ""}
           </td>
           <td class="py-3 align-top text-right">
             <div class="font-semibold text-slate-900">${escapeHtml(x.price)}</div>
@@ -483,9 +470,7 @@
   }
 
   function setupSignInForm() {
-    console.log("🔑 Setting up sign-in form...");
     const form = qs("#signinForm");
-    console.log("📝 Form element:", form);
     if (!form) {
       console.warn("⚠️ Sign-in form #signinForm not found in DOM!");
       return;
@@ -493,7 +478,6 @@
 
     const status = qs("#signinStatus");
     const submitBtn = qs("button[type='submit']", form);
-    console.log("✓ Form setup: form, status elem, submit btn found");
 
     function setStatus(msg, kind="info") {
       if (!status) return;
@@ -503,12 +487,10 @@
     }
 
     form.addEventListener("submit", async (e) => {
-      console.log("🖱️ Sign-in form submitted");
       e.preventDefault();
 
       const email = (qs("#sEmail")?.value || "").trim();
       const password = (qs("#sPassword")?.value || "").trim();
-      console.log("📧 Email:", email, "Password length:", password.length);
 
       if (!email || !password) {
         console.warn("⚠️ Missing email or password");
@@ -517,7 +499,6 @@
       }
 
       const loginEndpoint = cfg.AUTH_LOGIN_ENDPOINT || cfg.AUTH_ENDPOINT || "";
-      console.log("🌐 Login endpoint:", loginEndpoint);
       if (!loginEndpoint) {
         console.error("❌ No login endpoint configured!");
         setStatus("Sign-in is not available yet. Please contact us for help.", "error");
@@ -525,7 +506,6 @@
       }
 
       const postUrl = getApiUrl(loginEndpoint);
-      console.log("📍 Post URL:", postUrl);
       if (!postUrl) {
         console.error("❌ Could not resolve API URL!");
         setStatus("Sign-in is not available yet. Please contact us for help.", "error");
@@ -536,7 +516,6 @@
       if (submitBtn) submitBtn.disabled = true;
 
       try {
-        console.log("🔐 Attempting login to:", postUrl);
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -544,9 +523,7 @@
           body: JSON.stringify({ email, password })
         });
 
-        console.log("📡 Response status:", res.status);
         const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
-        console.log("📦 Response data:", data);
       
       if (!res.ok) {
         const errorMsg = data.error || data.message || `Sign-in failed (${res.status})`;
@@ -559,7 +536,6 @@
       localStorage.setItem("hrh_auth_email", email);
 
       setStatus("Sign-in successful! Redirecting to portal...", "ok");
-      console.log("✅ Login successful, redirecting to portal");
       
       // Redirect to portal
       setTimeout(() => {
@@ -576,9 +552,7 @@
   }
 
   function setupRegisterForm() {
-    console.log("📝 Setting up register form...");
     const form = qs("#registerForm");
-    console.log("📝 Form element:", form);
     if (!form) {
       console.warn("⚠️ Register form #registerForm not found in DOM!");
       return;
@@ -591,7 +565,6 @@
     const step2 = qs("#registerStep2");
     const verifyCodeBtn = qs("#verifyCodeBtn");
     const resendCodeBtn = qs("#resendCodeBtn");
-    console.log("✓ Register form setup: all elements found");
     
     let registeredEmail = "";
 
@@ -610,14 +583,12 @@
     }
 
     form.addEventListener("submit", async (e) => {
-      console.log("🖱️ Register form submitted");
       e.preventDefault();
 
       const fullName = (qs("#rName")?.value || "").trim();
       const email = (qs("#rEmail")?.value || "").trim();
       const phone = (qs("#rPhone")?.value || "").trim();
       const password = (qs("#rPassword")?.value || "").trim();
-      console.log("📧 Registration data:", {fullName, email, phone, passwordLength: password.length});
       const confirm = (qs("#rPasswordConfirm")?.value || "").trim();
       const agree = qs("#rAgree")?.checked || false;
 
@@ -654,7 +625,6 @@
       if (submitBtn) submitBtn.disabled = true;
 
       try {
-        console.log("📝 Registering new account:", email);
         const res = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -662,9 +632,7 @@
           body: JSON.stringify({ fullName, email, phone, password })
         });
 
-        console.log("📡 Registration response status:", res.status);
         const data = await res.json().catch(() => ({ error: "Invalid response from server" }));
-        console.log("📦 Registration response data:", data);
         
         if (!res.ok) {
           const errorMsg = data.error || data.message || `Request failed (${res.status})`;
@@ -673,7 +641,6 @@
 
         // Show verification step
         registeredEmail = email;
-        console.log("✅ Registration successful! Showing verification step");
         setStatus(data.message || "✓ Verification code sent to your email!", "ok");
         
         // Switch to step 2
@@ -709,7 +676,6 @@
         verifyCodeBtn.disabled = true;
 
         try {
-          console.log("🔐 Verifying email with code:", code, "for email:", registeredEmail);
           const res = await fetch(postUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -717,15 +683,12 @@
             body: JSON.stringify({ email: registeredEmail, code })
           });
 
-          console.log("📡 Verification response status:", res.status);
           const data = await res.json().catch(() => ({ error: "Invalid response" }));
-          console.log("📦 Verification response data:", data);
           
           if (!res.ok) {
             throw new Error(data.error || `Verification failed (${res.status})`);
           }
 
-          console.log("✅ Email verified! Account created successfully");
           setVerifyStatus("✓ Email verified! Redirecting to sign in...", "ok");
           
           // Reset form and switch back to login
@@ -771,7 +734,6 @@
       resendCodeBtn.addEventListener("click", async () => {
         if (!registeredEmail) return;
         
-        console.log("🔄 Resending verification code to:", registeredEmail);
         setVerifyStatus("Resending code...");
         resendCodeBtn.disabled = true;
 
@@ -792,12 +754,9 @@
             })
           });
 
-          console.log("📡 Resend response status:", res.status);
           const data = await res.json().catch(() => ({}));
-          console.log("📦 Resend response data:", data);
           
           if (res.ok) {
-            console.log("✅ Code resent successfully");
             setVerifyStatus("✓ New code sent to your email!", "ok");
           } else {
             throw new Error(data.error || "Failed to resend code");
@@ -832,7 +791,6 @@
       if (emailEl) {
         if (isDemoMode) {
           emailEl.textContent = "Demo User (Preview Mode)";
-          console.log("🎭 Portal running in DEMO MODE - not authenticated");
         } else if (email) {
           emailEl.textContent = email;
         }
@@ -1010,7 +968,7 @@
       },
       {
         patterns: ["service", "support", "help", "offer", "provide", "what", "do you"],
-        answer: "We offer:\n✓ Employment support & job placement\n✓ Benefits assistance\n✓ Immigration support (non-rep)\n✓ Travel services\n✓ Community programs\n\nVisit Services page for details.",
+        answer: "We offer:\n✓ Commissioner for Oaths services in Alberta\n✓ Immigration administrative support only (no consultation, advice, or representation)\n✓ Benefits and community support applications\n✓ Passport, travel and identity document admin support\n✓ Housing, family/civil form admin and system navigation\n\nVisit Services page for details.",
         suggestions: ["Book now", "Contact us", "Our hours?"]
       },
       {
@@ -1020,17 +978,17 @@
       },
       {
         patterns: ["cost", "price", "fee", "how much", "charge", "expensive"],
-        answer: "Pricing varies by service. Contact us for a consultation and we'll provide a detailed quote.",
+        answer: "Pricing varies by service. Contact us for a scope review and we'll provide a detailed quote before work begins.",
         suggestions: ["Services", "Contact", "Book appointment"]
       },
       {
         patterns: ["employment", "job", "work", "career", "position"],
-        answer: "We provide comprehensive employment support including job search, resume help, interview prep, and job placement. Contact us or book an appointment to discuss your needs.",
-        suggestions: ["Book now", "Contact us", "Services"]
+        answer: "Employment-related services are not currently offered. We can still help with benefits, commissioning, immigration administrative support, travel documents, housing forms, and system navigation.",
+        suggestions: ["Services", "Book now", "Contact us"]
       },
       {
         patterns: ["immigration", "visa", "permit", "refugee", "sponsorship"],
-        answer: "We offer non-representative immigration support. Please contact us directly to discuss your situation in detail.",
+        answer: "We provide immigration administrative support only, such as account setup, form-entry support from client-provided information, uploads, tracker access, webforms, PR card renewal/replacement admin support, citizenship admin support, IQAS/WES, and package organization. We do not provide immigration consultation, legal advice, eligibility advice, program selection, strategy, or representation.",
         suggestions: ["Contact", "Appointment", "Services"]
       },
       {
@@ -1256,11 +1214,14 @@
       }
 
       container.innerHTML = services.map(service => `
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-          <div class="text-sm font-semibold">${escapeHtml(service.name)}</div>
-          <div class="mt-1 text-sm text-slate-700">${escapeHtml(service.price)}</div>
-          <div class="mt-2 text-xs text-slate-600">${escapeHtml(service.description)}</div>
-        </div>
+        <article class="dynamic-service-card overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <img src="${escapeAttr(service.image || "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80")}" alt="${escapeAttr(service.alt || service.name)}" class="h-44 w-full object-cover">
+          <div class="p-5">
+            <div class="text-sm font-semibold">${escapeHtml(service.name)}</div>
+            <div class="mt-1 text-sm font-bold text-brand-700">${escapeHtml(service.price)}</div>
+            <div class="mt-2 text-xs leading-5 text-slate-600">${escapeHtml(service.description)}</div>
+          </div>
+        </article>
       `).join("");
 
     } catch (err) {
@@ -1288,11 +1249,18 @@
       if (categories.length === 0) return;
 
       container.innerHTML = categories.map(cat => `
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div class="text-sm font-semibold">${escapeHtml(cat.name)}</div>
-          <p class="mt-2 text-sm text-slate-600">${escapeHtml(cat.description)}</p>
-          <a class="mt-4 inline-flex items-center text-sm font-medium text-slate-900 hover:underline" href="booking.html">Book →</a>
-        </div>
+        <article class="dynamic-service-card overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <img src="${escapeAttr(cat.image || "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80")}" alt="${escapeAttr(cat.alt || cat.name)}" class="h-44 w-full object-cover">
+          <div class="p-6">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-sm font-semibold">${escapeHtml(cat.name)}</div>
+              ${cat.badge ? `<span class="rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold text-brand-800">${escapeHtml(cat.badge)}</span>` : ""}
+            </div>
+            <p class="mt-2 text-sm leading-6 text-slate-600">${escapeHtml(cat.description)}</p>
+            ${cat.note ? `<p class="mt-3 rounded-2xl bg-slate-50 p-3 text-xs leading-5 text-slate-600">${escapeHtml(cat.note)}</p>` : ""}
+            <a class="mt-4 inline-flex items-center text-sm font-medium text-slate-900 hover:underline" href="/booking" target="_blank" rel="noopener noreferrer">Book →</a>
+          </div>
+        </article>
       `).join("");
 
     } catch (err) {
@@ -1303,7 +1271,6 @@
   window.HRH_APP = { PRICING };
 
   document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 Starting app initialization");
     try {
       injectCommon();
       setupMobileMenu();
@@ -1315,22 +1282,14 @@
       setupRotatingText();
       loadDynamicServices();
       loadServiceCategories();
-      console.log("✅ Basic setup complete, setting up auth");
       setupAuthTabs();
-      console.log("✅ Auth tabs setup");
       setupSignInForm();
-      console.log("✅ Sign in form setup");
       setupRegisterForm();
-      console.log("✅ Register form setup");
       setupGoogleSignIn();
-      console.log("✅ Google sign in setup");
       setupPortalApp();
-      console.log("✅ Portal app setup");
       setupChatWidget();
-      console.log("✅ Chat widget setup");
       initMapIfPresent();
       initFlatpickrIfPresent();
-      console.log("✅ App fully initialized");
     } catch (err) {
       console.error("❌ Initialization error:", err);
       console.error(err.stack);
