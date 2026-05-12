@@ -49,7 +49,8 @@ const services = {
       id: "may-commissioning-special",
       name: "May commissioning special",
       price: "$20",
-      description: "One-page Commissioner for Oaths service with one exhibit for the month of May.",
+      description: "One-page Commissioner for Oaths service with one exhibit for the month of May. Includes identity review, oath/affirmation or declaration administration, and clear next-step handling instructions.",
+      details: ["Alberta-use affidavits and statutory declarations where permitted", "Bring valid government-issued photo ID", "Extra exhibits can be added at the posted per-exhibit rate"],
       category: "commissioning",
       image: freeImage.commissioning,
       alt: "Documents ready for Commissioner for Oaths service"
@@ -59,6 +60,7 @@ const services = {
       name: "Immigration admin support",
       price: "$15–$600+",
       description: "Client-directed IRCC account, form-entry, upload, tracker, PR renewal, citizenship, webform and package organization support only—not consultation or legal advice.",
+      details: ["Secure account and upload navigation", "PR card renewal/replacement and citizenship admin packages", "No eligibility advice, program choice advice, representation, or strategy"],
       category: "immigration",
       image: freeImage.immigration,
       alt: "Administrative support meeting with documents"
@@ -68,6 +70,7 @@ const services = {
       name: "Benefits application support",
       price: "$20–$100+",
       description: "EI, Alberta Income Support, AISH, CPP/OAS, dental plan, housing and local support application navigation.",
+      details: ["Document checklist and account setup help", "Client-provided information organized into application-ready steps", "Follow-up reminders and contact path tracking"],
       category: "benefits",
       image: freeImage.benefits,
       alt: "Community support and benefits paperwork"
@@ -77,6 +80,7 @@ const services = {
       name: "Passport & travel document support",
       price: "$40–$95+",
       description: "Checklist and administrative support for passports, travel documents, consent letters, ETA and visa form-entry tasks.",
+      details: ["Passport renewal and application checklist review", "Child travel document and consent-letter admin support", "ETA, visa-form, and appointment-navigation help based on client direction"],
       category: "travel",
       image: freeImage.travel,
       alt: "Passport and travel documents"
@@ -87,6 +91,7 @@ const services = {
       id: "commissioning",
       name: "Commissioner for Oaths (Alberta)",
       description: "Administer oaths and take, receive, and attest affidavits, affirmations, statutory declarations, sworn statements and related exhibits where permitted in Alberta.",
+      details: ["Affidavits, solemn affirmations, and statutory declarations", "Government, benefit, insurance, school, and housing declarations", "Exhibits marked and attached when connected to an eligible commissioned document"],
       note: "A Commissioner for Oaths is not a Notary Public and cannot provide legal advice or verify the truth of a document.",
       icon: "stamp",
       badge: "May $20 promo",
@@ -97,6 +102,7 @@ const services = {
       id: "immigration",
       name: "Immigration Admin Support (Non-advisory)",
       description: "IRCC account setup, webforms, PR renewal/replacement, citizenship admin, tracker access, document upload organization, IQAS/WES, visa and sponsorship package admin support.",
+      details: ["Secure account setup, webform formatting, tracker access, and status-screen navigation", "PR card renewal/replacement, citizenship, IQAS/WES, visa, and sponsorship package organization", "Form-entry support is based only on information and decisions supplied by the client"],
       note: "Administrative support only. No immigration consultation, representation, program advice, eligibility advice, or legal advice.",
       icon: "globe",
       badge: "Admin only",
@@ -107,6 +113,7 @@ const services = {
       id: "benefits",
       name: "Benefits & Community Supports",
       description: "EI, Alberta Income Support, AISH, Canada Dental Care Plan, CPP/OAS, Wood Buffalo Lift, Wood Buffalo Housing and community connection support.",
+      details: ["Benefit-account access, document checklist, and application navigation", "Wood Buffalo Lift and Housing package organization", "Plain-language next steps for follow-up calls, uploads, and appointments"],
       icon: "document",
       image: freeImage.benefits,
       alt: "Benefits and community support paperwork"
@@ -115,6 +122,7 @@ const services = {
       id: "travel",
       name: "Travel & Identity Documents",
       description: "Passport applications and renewals, travel documents, child travel documents, child travel consent letters, Kenyan ETA, US visa admin support and flight booking assistance.",
+      details: ["Photo, guarantor, reference, and supporting-document checklist review", "Child travel consent-letter preparation support and commissioning coordination where appropriate", "Client-directed ETA/visa form-entry and appointment navigation"],
       icon: "plane",
       image: freeImage.travel,
       alt: "Passport and travel planning"
@@ -123,6 +131,7 @@ const services = {
       id: "housing-family-civil",
       name: "Housing, Family & Civil Admin",
       description: "Housing forms, rental applications, family/civil form administrative support, divorce application admin packages, account setup, letters, calls and email assistance.",
+      details: ["Rental and housing application package organization", "Client-directed family/civil form typing and document sorting", "Basic correspondence, account setup, and follow-up tracking"],
       note: "Administrative support only. Legal advice, legal drafting and representation are outside scope.",
       icon: "home",
       image: freeImage.housing,
@@ -132,6 +141,7 @@ const services = {
       id: "navigation",
       name: "System Navigation & Advocacy Admin",
       description: "Plain-language next-step planning, document checklists, office contact paths, complaint package organization and follow-up tracking.",
+      details: ["Office contact paths and appointment preparation", "Document checklist and timeline planning", "Administrative advocacy support, without legal or professional representation"],
       icon: "compass",
       image: freeImage.navigation,
       alt: "Community navigation support"
