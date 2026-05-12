@@ -90,6 +90,64 @@
     { category: "Housing, Family & Civil Admin", service: "Divorce application administrative package", price: "$900+", description: "Client-directed document organization and form-entry support only; independent legal advice is recommended.", image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=900&q=80" },
     { category: "Housing, Family & Civil Admin", service: "Letters, calls, email and account setup", price: "$10–$40+", description: "Administrative support for accounts, basic correspondence, printing, and follow-up tracking.", image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80" }
   ];
+
+  const CATEGORY_META = {
+    "Commissioner for Oaths (Alberta)": {
+      badge: "May $20 promo",
+      details: ["Affidavits, affirmations, statutory declarations, and sworn statements", "Government, benefit, school, insurance, and housing declarations", "Identity review plus exhibit handling where permitted in Alberta"]
+    },
+    "Immigration Admin Support (Non-advisory)": {
+      badge: "Admin only",
+      details: ["IRCC secure account setup, webforms, uploads, and tracker access", "PR card, citizenship, IQAS/WES, visa, and sponsorship package organization", "No eligibility advice, program advice, representation, or legal strategy"]
+    },
+    "Benefits & Community Supports": {
+      badge: "Applications",
+      details: ["EI, Alberta Income Support, AISH, CPP/OAS, and dental-plan navigation", "Wood Buffalo Lift and Wood Buffalo Housing package support", "Document checklist, account setup, and follow-up tracking"]
+    },
+    "Travel & Identity Documents": {
+      badge: "Identity",
+      details: ["Passport application and renewal checklist support", "Child travel documents and consent-letter admin help", "ETA, visa form-entry, appointment, and flight-booking assistance"]
+    },
+    "Housing, Family & Civil Admin": {
+      badge: "Admin only",
+      details: ["Housing and rental application packages", "Client-directed family/civil form typing and sorting", "Letters, calls, email, accounts, and follow-up organization"]
+    }
+  };
+
+  function detailsList(items) {
+    if (!Array.isArray(items) || !items.length) return "";
+    return `<ul class="service-detail-list">${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+  }
+
+  function localFeaturedServices() {
+    return [
+      PRICING[0],
+      PRICING.find(x => x.service === "PR card renewal admin package"),
+      PRICING.find(x => x.service === "AISH application admin support"),
+      PRICING.find(x => x.service === "Passport application or renewal admin support")
+    ].filter(Boolean).map(x => ({
+      name: x.service,
+      price: x.price,
+      description: x.description,
+      image: x.image,
+      alt: `${x.service} support`,
+      details: CATEGORY_META[x.category]?.details?.slice(0, 2) || []
+    }));
+  }
+
+  function localServiceCategories() {
+    const grouped = groupBy(PRICING, x => x.category);
+    return Object.entries(grouped).map(([name, items]) => ({
+      name,
+      description: `${items.length} listed service${items.length === 1 ? "" : "s"}, including ${items.slice(0, 3).map(x => x.service).join(", ")}.`,
+      badge: CATEGORY_META[name]?.badge || `${items.length} options`,
+      details: CATEGORY_META[name]?.details || [],
+      note: name.includes("Immigration") ? "Administrative support only; no consultation, advice, or representation." : (name.includes("Civil") ? "Administrative support only; legal advice and representation are outside scope." : "Final scope and price are confirmed before work starts."),
+      image: items[0]?.image,
+      alt: `${name} services`
+    }));
+  }
+
   function groupBy(arr, keyFn) {
     return arr.reduce((acc, item) => {
       const key = keyFn(item);
@@ -1220,13 +1278,25 @@
             <div class="text-sm font-semibold">${escapeHtml(service.name)}</div>
             <div class="mt-1 text-sm font-bold text-brand-700">${escapeHtml(service.price)}</div>
             <div class="mt-2 text-xs leading-5 text-slate-600">${escapeHtml(service.description)}</div>
+            ${detailsList(service.details)}
           </div>
         </article>
       `).join("");
 
     } catch (err) {
       console.error("Failed to load services:", err);
-      container.innerHTML = '<p class="text-slate-600 text-sm">Unable to load services. Please try again later.</p>';
+      const services = localFeaturedServices();
+      container.innerHTML = services.map(service => `
+        <article class="dynamic-service-card overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <img src="${escapeAttr(service.image || "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80")}" alt="${escapeAttr(service.alt || service.name)}" class="h-44 w-full object-cover">
+          <div class="p-5">
+            <div class="text-sm font-semibold">${escapeHtml(service.name)}</div>
+            <div class="mt-1 text-sm font-bold text-brand-700">${escapeHtml(service.price)}</div>
+            <div class="mt-2 text-xs leading-5 text-slate-600">${escapeHtml(service.description)}</div>
+            ${detailsList(service.details)}
+          </div>
+        </article>
+      `).join("");
     }
   }
 
@@ -1257,6 +1327,7 @@
               ${cat.badge ? `<span class="rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold text-brand-800">${escapeHtml(cat.badge)}</span>` : ""}
             </div>
             <p class="mt-2 text-sm leading-6 text-slate-600">${escapeHtml(cat.description)}</p>
+            ${detailsList(cat.details)}
             ${cat.note ? `<p class="mt-3 rounded-2xl bg-slate-50 p-3 text-xs leading-5 text-slate-600">${escapeHtml(cat.note)}</p>` : ""}
             <a class="mt-4 inline-flex items-center text-sm font-medium text-slate-900 hover:underline" href="/booking" target="_blank" rel="noopener noreferrer">Book →</a>
           </div>
@@ -1265,6 +1336,22 @@
 
     } catch (err) {
       console.error("Failed to load service categories:", err);
+      const categories = localServiceCategories();
+      container.innerHTML = categories.map(cat => `
+        <article class="dynamic-service-card overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <img src="${escapeAttr(cat.image || "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80")}" alt="${escapeAttr(cat.alt || cat.name)}" class="h-44 w-full object-cover">
+          <div class="p-6">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-sm font-semibold">${escapeHtml(cat.name)}</div>
+              ${cat.badge ? `<span class="rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold text-brand-800">${escapeHtml(cat.badge)}</span>` : ""}
+            </div>
+            <p class="mt-2 text-sm leading-6 text-slate-600">${escapeHtml(cat.description)}</p>
+            ${detailsList(cat.details)}
+            ${cat.note ? `<p class="mt-3 rounded-2xl bg-slate-50 p-3 text-xs leading-5 text-slate-600">${escapeHtml(cat.note)}</p>` : ""}
+            <a class="mt-4 inline-flex items-center text-sm font-medium text-slate-900 hover:underline" href="/booking" target="_blank" rel="noopener noreferrer">Book →</a>
+          </div>
+        </article>
+      `).join("");
     }
   }
 
