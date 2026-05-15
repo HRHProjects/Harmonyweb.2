@@ -869,3 +869,22 @@ main section img.rounded-\[32px\] {
     display: none;
   }
 }
+
+/* ── Site footer ──────────────────────────────────────────────────────────── */
+.site-footer {
+  background: linear-gradient(90deg, #0f766e 0%, #0ea5e9 52%, #3b82f6 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+.site-footer .text-slate-600,
+.site-footer .text-slate-500 {
+  color: rgba(255, 255, 255, 0.78);
+}
+.site-footer .font-semibold {
+  color: #ffffff;
+}
+.site-footer a {
+  color: rgba(255, 255, 255, 0.85);
+}
+.site-footer a:hover {
+  color: #ffffff;
+}
