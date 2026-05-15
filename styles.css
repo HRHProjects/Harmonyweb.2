@@ -423,6 +423,7 @@ main section {
   align-items: center;
   padding-top: 3.5rem;
   padding-bottom: 3.5rem;
+  padding-left: 1rem;
 }
 .hero-fullbleed__inner {
   max-width: 560px;
