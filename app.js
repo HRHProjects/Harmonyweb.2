@@ -209,7 +209,7 @@
 
     const optgroups = cats.map(cat => {
       const opts = grouped[cat]
-        .map(x => `<option value="${escapeAttr(x.service)}">${escapeHtml(x.service)} — ${escapeHtml(x.price)}</option>`)
+        .map(x => `<option value="${escapeAttr(x.service)}">${escapeHtml(x.service)}, ${escapeHtml(x.price)}</option>`)
         .join("");
       return `<optgroup label="${escapeAttr(cat)}">${opts}</optgroup>`;
     }).join("");
@@ -296,9 +296,9 @@
         otherWrap?.classList.add("hidden");
       } catch (err) {
         // Mailto fallback
-        const subject = encodeURIComponent("Appointment Request — Harmony Resource Hub");
+        const subject = encodeURIComponent("Appointment Request, Harmony Resource Hub");
         const lines = [
-          `Service: ${payload.service}${payload.service === "Other" ? " — " + payload.otherService : ""}`,
+          `Service: ${payload.service}${payload.service === "Other" ? ", " + payload.otherService : ""}`,
           `Appointment type: ${payload.appointmentType}`,
           `Preferred date/time: ${payload.preferredDateTime}`,
           `Name: ${payload.clientName}`,
@@ -356,7 +356,7 @@
         setStatus("Message sent. We will respond as soon as possible.", "ok");
         form.reset();
       } catch (err) {
-        const subject = encodeURIComponent("Website message — Harmony Resource Hub");
+        const subject = encodeURIComponent("Website message, Harmony Resource Hub");
         const body = encodeURIComponent(
           `Name: ${payload.name}\nEmail: ${payload.email}\nPhone: ${payload.phone}\n\n${payload.message}`
         );

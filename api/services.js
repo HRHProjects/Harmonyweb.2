@@ -59,7 +59,7 @@ const services = {
       id: "immigration-admin-support",
       name: "Immigration admin support",
       price: "$15–$600+",
-      description: "Client-directed IRCC account, form-entry, upload, tracker, PR renewal, citizenship, webform and package organization support only—not consultation or legal advice.",
+      description: "Client-directed IRCC account, form-entry, upload, tracker, PR renewal, citizenship, webform and package organization support only, not consultation or legal advice.",
       details: ["Secure account and upload navigation", "PR card renewal/replacement and citizenship admin packages", "No eligibility advice, program choice advice, representation, or strategy"],
       category: "immigration",
       image: freeImage.immigration,
