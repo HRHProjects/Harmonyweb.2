@@ -75,57 +75,54 @@
   </header>
 
   <main id="main">
-    <section class="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-14 pb-10">
-      <div class="grid gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:items-center">
-        <div class="space-y-6">
-          <div class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-900 accent-pill">
-            Alberta-wide virtual support • Fort McMurray walk-in for residents
+    <section class="hero-fullbleed">
+      <!-- Full-width image, centred, fills left to right -->
+      <img
+        src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=2400&q=85"
+        alt="Harmony Resource Hub client support desk with documents and laptop"
+        class="hero-fullbleed__img"
+      >
+      <!-- Gradient: dark on the left where text lives, fades to transparent on the right so faces stay visible -->
+      <div class="hero-fullbleed__overlay" aria-hidden="true"></div>
+
+      <div class="hero-fullbleed__content">
+        <div class="mx-auto max-w-6xl w-full px-4 sm:px-6">
+          <div class="hero-fullbleed__inner space-y-6">
+
+            <div class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+              Alberta-wide virtual support • Fort McMurray walk-in for residents
+            </div>
+
+            <h1 class="text-4xl font-extrabold tracking-tight text-white drop-shadow sm:text-5xl lg:text-6xl">
+              Confident paperwork support for life’s important next steps.
+            </h1>
+
+            <p class="text-base leading-8 text-white/85 drop-shadow sm:text-lg">
+              <span data-brand-name>Harmony Resource Hub</span> helps clients prepare, organize, and submit document-ready packages for commissioning, immigration admin support, benefits, housing, travel documents, and system navigation—without legal advice or immigration consultation.
+            </p>
+
+            <div class="spotlight-pill-hero" data-rotate-text data-rotate-items="Commissioning documents|Immigration admin support|Benefits applications|Travel document support|Housing forms">
+              <span class="spotlight-dot spotlight-dot--white"></span>
+              <span>Service spotlight:</span>
+              <span class="spotlight-value spotlight-value--white" data-rotate-value aria-live="polite">Commissioning documents</span>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <a class="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-soft hover:bg-slate-100" href="/booking" target="_blank" rel="noopener noreferrer">
+                Request an appointment
+              </a>
+              <a class="inline-flex items-center justify-center rounded-xl border border-white/50 bg-white/10 px-5 py-3 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/20" href="/services" target="_blank" rel="noopener noreferrer">
+                View services &amp; pricing
+              </a>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div class="metric-card-hero"><div class="text-xs text-white/60">Delivery</div><div class="mt-1 text-sm font-semibold text-white">Virtual Alberta-wide</div><div class="mt-1 text-xs text-white/75">Phone and online appointments.</div></div>
+              <div class="metric-card-hero"><div class="text-xs text-white/60">Local access</div><div class="mt-1 text-sm font-semibold text-white">Fort McMurray</div><div class="mt-1 text-xs text-white/75">Walk-in support for residents.</div></div>
+              <div class="metric-card-hero"><div class="text-xs text-white/60">Boundaries</div><div class="mt-1 text-sm font-semibold text-white">Admin support only</div><div class="mt-1 text-xs text-white/75">Clear scope before work starts.</div></div>
+            </div>
+
           </div>
-
-          <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            Confident paperwork support for life’s important next steps.
-          </h1>
-
-          <p class="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
-            <span data-brand-name>Harmony Resource Hub</span> helps clients prepare, organize, and submit document-ready packages for commissioning, immigration admin support, benefits, housing, travel documents, and system navigation—without legal advice or immigration consultation.
-          </p>
-
-          <div class="spotlight-pill" data-rotate-text data-rotate-items="Commissioning documents|Immigration admin support|Benefits applications|Travel document support|Housing forms">
-            <span class="spotlight-dot"></span>
-            <span>Service spotlight:</span>
-            <span class="spotlight-value" data-rotate-value aria-live="polite">Commissioning documents</span>
-          </div>
-
-          <div class="flex flex-wrap gap-3">
-            <a class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-white shadow-soft hover:bg-slate-800" href="/booking" target="_blank" rel="noopener noreferrer">
-              Request an appointment
-            </a>
-            <a class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-slate-900 hover:bg-slate-50" href="/services" target="_blank" rel="noopener noreferrer">
-              View services & pricing
-            </a>
-          </div>
-
-          <div class="grid gap-3 sm:grid-cols-3">
-            <div class="metric-card"><div class="text-xs text-slate-500">Delivery</div><div class="mt-1 text-sm font-semibold">Virtual Alberta-wide</div><div class="mt-1 text-xs text-slate-600">Phone and online appointments.</div></div>
-            <div class="metric-card"><div class="text-xs text-slate-500">Local access</div><div class="mt-1 text-sm font-semibold">Fort McMurray</div><div class="mt-1 text-xs text-slate-600">Walk-in support for residents.</div></div>
-            <div class="metric-card"><div class="text-xs text-slate-500">Boundaries</div><div class="mt-1 text-sm font-semibold">Admin support only</div><div class="mt-1 text-xs text-slate-600">Clear scope before work starts.</div></div>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div class="absolute -inset-6 rounded-[32px] hero-glow blur-2xl"></div>
-          <figure class="hero-image-card relative overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-soft">
-            <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80" alt="Harmony Resource Hub client support desk with documents and laptop" class="h-[520px] w-full object-cover">
-            <figcaption class="absolute inset-x-4 bottom-4 rounded-3xl border border-white/40 bg-white/90 p-5 shadow-soft backdrop-blur">
-              <div class="text-sm font-bold text-slate-900">Document-ready support, step by step</div>
-              <p class="mt-2 text-sm leading-6 text-slate-600">Bring your forms, ID, exhibits, and questions. We help organize the process and confirm next steps in plain language.</p>
-              <div class="mt-4 grid gap-2 sm:grid-cols-3">
-                <span class="mini-chip">Commissioning</span>
-                <span class="mini-chip">Immigration admin</span>
-                <span class="mini-chip">Benefits</span>
-              </div>
-            </figcaption>
-          </figure>
         </div>
       </div>
     </section>
