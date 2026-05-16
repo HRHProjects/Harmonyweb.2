@@ -100,25 +100,31 @@ a { text-underline-offset: 3px; }
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
-/* Logo sizing: larger and unframed for better visibility */
+/* Logo – single clean rule, fully transparent, no frame */
 .logo-badge {
   width: auto;
   height: auto;
   padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  flex: 0 0 auto;
 }
 .logo-img {
-  width: 190px;
+  width: 180px;
   height: auto;
   display: block;
+  max-width: 100%;
 }
 @media (min-width: 640px) {
   .logo-img {
-    width: 230px;
+    width: 210px;
   }
 }
 @media (min-width: 1024px) {
   .logo-img {
-    width: 270px;
+    width: 250px;
   }
 }
 
@@ -606,13 +612,6 @@ header nav {
 header nav a {
   white-space: nowrap;
 }
-.logo-badge {
-  background: none !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  flex: 0 0 auto;
-}
 .promo-banner {
   position: relative;
   overflow: hidden;
@@ -682,9 +681,6 @@ main section img.rounded-\[32px\] {
   box-shadow: 0 0 0 4px rgba(14,165,233,0.12);
 }
 @media (max-width: 1180px) and (min-width: 1024px) {
-  .logo-img {
-    width: 220px;
-  }
   header nav {
     gap: 0.35rem !important;
   }
@@ -702,9 +698,6 @@ main section img.rounded-\[32px\] {
   }
 }
 @media (max-width: 1023px) {
-  .logo-img {
-    width: 170px;
-  }
   header .flex.items-center.justify-between {
     align-items: center;
   }
@@ -757,9 +750,8 @@ main section img.rounded-\[32px\] {
   header a[href="/"] .leading-tight {
     display: none;
   }
-  .logo-badge {
-    width: 92px;
-    height: 54px;
+  .logo-img {
+    width: 140px;
   }
 }
 
