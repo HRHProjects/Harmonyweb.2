@@ -107,18 +107,18 @@ body {
   padding: 0;
 }
 .logo-img {
-  width: 132px;
+  width: 190px;
   height: auto;
   display: block;
 }
 @media (min-width: 640px) {
   .logo-img {
-    width: 168px;
+    width: 230px;
   }
 }
 @media (min-width: 1024px) {
   .logo-img {
-    width: 188px;
+    width: 270px;
   }
 }
 
@@ -683,7 +683,7 @@ main section img.rounded-\[32px\] {
 }
 @media (max-width: 1180px) and (min-width: 1024px) {
   .logo-img {
-    width: 172px;
+    width: 220px;
   }
   header nav {
     gap: 0.35rem !important;
@@ -703,7 +703,7 @@ main section img.rounded-\[32px\] {
 }
 @media (max-width: 1023px) {
   .logo-img {
-    width: 124px;
+    width: 170px;
   }
   header .flex.items-center.justify-between {
     align-items: center;
