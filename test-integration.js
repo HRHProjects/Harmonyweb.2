@@ -12,6 +12,7 @@ const NC = '\x1b[0m';
 
 let passed = 0;
 let failed = 0;
+const TEST_CLIENT_IP = '127.0.0.1';
 
 function pass(msg) {
   console.log(`${GREEN}✓${NC} ${msg}`);
@@ -271,7 +272,7 @@ function createMockReq(method, body = {}, extras = {}) {
     headers: extras.headers || {},
     query: extras.query || {},
     body,
-    socket: { remoteAddress: '127.0.0.1' },
+    socket: { remoteAddress: TEST_CLIENT_IP },
     async *[Symbol.asyncIterator]() {}
   };
 }

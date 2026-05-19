@@ -119,7 +119,6 @@ function verifyPassword(password, storedPassword) {
       if (!salt || !storedHash) return false;
 
       const derivedHash = crypto.scryptSync(password, salt, 64).toString("hex");
-      if (derivedHash.length !== storedHash.length) return false;
       return crypto.timingSafeEqual(Buffer.from(derivedHash, "hex"), Buffer.from(storedHash, "hex"));
     }
   } catch {

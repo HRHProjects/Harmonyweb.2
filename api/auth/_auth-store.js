@@ -1,3 +1,4 @@
+// Prefer the Vercel KV variable names and keep the Upstash names as a compatible fallback.
 const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || "";
 const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "";
 
@@ -69,6 +70,7 @@ async function getJson(kind, email) {
   }
 
   const raw = await runKvCommand("GET", namespacedKey(kind, normalizedEmail));
+  // Upstash/Vercel KV returns null when a key is missing.
   if (!raw) return null;
 
   if (typeof raw === "string") {
