@@ -110,10 +110,6 @@ async function getJsonBody(req) {
   try { return JSON.parse(raw); } catch { return {}; }
 }
 
-function hashPassword(password) {
-  return crypto.createHash("sha256").update(password).digest("hex");
-}
-
 function verifyPassword(password, storedPassword) {
   if (!storedPassword) return false;
 
@@ -126,13 +122,11 @@ function verifyPassword(password, storedPassword) {
       if (derivedHash.length !== storedHash.length) return false;
       return crypto.timingSafeEqual(Buffer.from(derivedHash, "hex"), Buffer.from(storedHash, "hex"));
     }
-
-    const legacyHash = hashPassword(password);
-    if (legacyHash.length !== storedPassword.length) return false;
-    return crypto.timingSafeEqual(Buffer.from(legacyHash, "hex"), Buffer.from(storedPassword, "hex"));
   } catch {
     return false;
   }
+
+  return false;
 }
 
 function getAllowedEmails() {

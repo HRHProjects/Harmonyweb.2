@@ -7,6 +7,12 @@ const memoryStore = globalThis.__HRH_AUTH_MEMORY_STORE__ || (globalThis.__HRH_AU
   approvedAccounts: new Map()
 });
 
+const MEMORY_BUCKETS = {
+  verification: memoryStore.verificationCodes,
+  account: memoryStore.verifiedAccounts,
+  approval: memoryStore.approvedAccounts
+};
+
 function normalizeEmail(email) {
   return (email || "").toString().trim().toLowerCase();
 }
@@ -48,12 +54,18 @@ function namespacedKey(kind, email) {
   return `hrh:auth:${kind}:${normalizeEmail(email)}`;
 }
 
+function getMemoryBucket(kind) {
+  const bucket = MEMORY_BUCKETS[kind];
+  if (!bucket) throw new Error(`Unknown auth storage kind: ${kind}`);
+  return bucket;
+}
+
 async function getJson(kind, email) {
   const normalizedEmail = normalizeEmail(email);
   if (!normalizedEmail) return null;
 
   if (!isPersistentStoreConfigured()) {
-    return memoryStore[kind].get(normalizedEmail) || null;
+    return getMemoryBucket(kind).get(normalizedEmail) || null;
   }
 
   const raw = await runKvCommand("GET", namespacedKey(kind, normalizedEmail));
@@ -75,7 +87,7 @@ async function setJson(kind, email, value) {
   if (!normalizedEmail) return;
 
   if (!isPersistentStoreConfigured()) {
-    memoryStore[kind].set(normalizedEmail, value);
+    getMemoryBucket(kind).set(normalizedEmail, value);
     return;
   }
 
@@ -87,7 +99,7 @@ async function deleteJson(kind, email) {
   if (!normalizedEmail) return;
 
   if (!isPersistentStoreConfigured()) {
-    memoryStore[kind].delete(normalizedEmail);
+    getMemoryBucket(kind).delete(normalizedEmail);
     return;
   }
 
@@ -95,31 +107,31 @@ async function deleteJson(kind, email) {
 }
 
 async function getVerification(email) {
-  return getJson("verificationCodes", email);
+  return getJson("verification", email);
 }
 
 async function setVerification(email, value) {
-  return setJson("verificationCodes", email, value);
+  return setJson("verification", email, value);
 }
 
 async function deleteVerification(email) {
-  return deleteJson("verificationCodes", email);
+  return deleteJson("verification", email);
 }
 
 async function getVerifiedAccount(email) {
-  return getJson("verifiedAccounts", email);
+  return getJson("account", email);
 }
 
 async function setVerifiedAccount(email, value) {
-  return setJson("verifiedAccounts", email, value);
+  return setJson("account", email, value);
 }
 
 async function getApprovedAccount(email) {
-  return getJson("approvedAccounts", email);
+  return getJson("approval", email);
 }
 
 async function setApprovedAccount(email, value) {
-  return setJson("approvedAccounts", email, value);
+  return setJson("approval", email, value);
 }
 
 function clearMemoryStoreForTests() {
