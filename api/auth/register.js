@@ -10,15 +10,18 @@
  *   HRH_ALLOWED_ORIGINS     (optional, comma-separated)
  */
 
+const crypto = require("crypto");
+const {
+  getPersistentStoreSetupError,
+  getStorageMode,
+  getVerifiedAccount,
+  normalizeEmail,
+  setVerification
+} = require("./_auth-store");
+
 const RATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const RATE_MAX = 6;
 const state = globalThis.__HRH_RATE_STATE__ || (globalThis.__HRH_RATE_STATE__ = new Map());
-
-// Store verification codes (email -> {code, expiresAt, password, fullName})
-const verificationCodes = globalThis.__HRH_VERIFICATION_CODES__ || (globalThis.__HRH_VERIFICATION_CODES__ = new Map());
-
-// Store verified accounts (email -> {verified, verifiedAt, fullName, password})
-const verifiedAccounts = globalThis.__HRH_VERIFIED_ACCOUNTS__ || (globalThis.__HRH_VERIFIED_ACCOUNTS__ = new Map());
 
 function now() { return Date.now(); }
 
@@ -105,14 +108,14 @@ function escapeHtml(str) {
 }
 
 function generateVerificationCode() {
-  // Generate a random 6-digit code
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  // Generates a 6-digit code (100000-999999, upper bound exclusive).
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
 function hashPassword(password) {
-  // Simple hash for demo - in production use bcrypt or similar
-  const crypto = require('crypto');
-  return crypto.createHash('sha256').update(password).digest('hex');
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(password, salt, 64).toString("hex");
+  return `scrypt:${salt}:${hash}`;
 }
 
 async function getJsonBody(req) {
@@ -189,7 +192,7 @@ module.exports = async (req, res) => {
 
     const body = await getJsonBody(req);
     const fullName = clampStr(body.fullName || body.name, 120);
-    const email = clampStr(body.email, 254);
+    const email = normalizeEmail(clampStr(body.email, 254));
     const phone = clampStr(body.phone, 40);
     const password = clampStr(body.password, 120);
 
@@ -200,6 +203,15 @@ module.exports = async (req, res) => {
     if (!password || password.length < 8) {
       return res.status(400).json({ ok: false, error: "Password must be at least 8 characters." });
     }
+    const storageError = getPersistentStoreSetupError();
+    if (process.env.VERCEL && storageError) {
+      return res.status(503).json({ ok: false, error: storageError });
+    }
+
+    const existingAccount = await getVerifiedAccount(email);
+    if (existingAccount?.verified) {
+      return res.status(409).json({ ok: false, error: "An account with that email already exists. Please sign in instead." });
+    }
 
     // Generate 6-digit verification code
     const verificationCode = generateVerificationCode();
@@ -209,12 +221,14 @@ module.exports = async (req, res) => {
     console.log("[register] Generated verification code:", verificationCode, "for email:", email);
 
     // Store verification code
-    verificationCodes.set(email.toLowerCase(), {
+    await setVerification(email, {
       code: verificationCode,
       expiresAt,
       password: passwordHash,
       fullName,
-      phone
+      phone,
+      email,
+      storageMode: getStorageMode()
     });
 
     const subject = `Verify your email - ${fullName}`;
@@ -247,6 +261,7 @@ If you didn't request this, please ignore this email.`;
     return res.status(200).json({ 
       ok: true,
       requiresVerification: true,
+      storage: getStorageMode(),
       message: "Verification code sent to your email. Please check your inbox and enter the code to complete registration."
     });
   } catch (e) {

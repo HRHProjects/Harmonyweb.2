@@ -11,15 +11,19 @@
  *   HRH_ALLOWED_ORIGINS    (optional, comma-separated list of origins)
  */
 
+const crypto = require("crypto");
+const {
+  getApprovedAccount,
+  getPersistentStoreSetupError,
+  getStorageMode,
+  getVerifiedAccount,
+  normalizeEmail,
+  setVerifiedAccount
+} = require("./_auth-store");
+
 const RATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const RATE_MAX = 10;
 const state = globalThis.__HRH_RATE_STATE__ || (globalThis.__HRH_RATE_STATE__ = new Map());
-
-// Shared storage for verified accounts
-const verifiedAccounts = globalThis.__HRH_VERIFIED_ACCOUNTS__ || (globalThis.__HRH_VERIFIED_ACCOUNTS__ = new Map());
-
-// Legacy approval storage (kept for backward compatibility)
-const approvedAccounts = globalThis.__HRH_APPROVED_ACCOUNTS__ || (globalThis.__HRH_APPROVED_ACCOUNTS__ = new Map());
 
 function now() { return Date.now(); }
 
@@ -106,9 +110,22 @@ async function getJsonBody(req) {
   try { return JSON.parse(raw); } catch { return {}; }
 }
 
-function hashPassword(password) {
-  const crypto = require('crypto');
-  return crypto.createHash('sha256').update(password).digest('hex');
+function verifyPassword(password, storedPassword) {
+  if (!storedPassword) return false;
+
+  try {
+    if (storedPassword.startsWith("scrypt:")) {
+      const [, salt, storedHash] = storedPassword.split(":");
+      if (!salt || !storedHash) return false;
+
+      const derivedHash = crypto.scryptSync(password, salt, 64).toString("hex");
+      return crypto.timingSafeEqual(Buffer.from(derivedHash, "hex"), Buffer.from(storedHash, "hex"));
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
 }
 
 function getAllowedEmails() {
@@ -141,7 +158,7 @@ module.exports = async (req, res) => {
     rateLimitOrThrow(req);
 
     const body = await getJsonBody(req);
-    const email = (body.email || "").toString().trim().toLowerCase();
+    const email = normalizeEmail(body.email);
     const password = (body.password || "").toString();
     const authMethod = body.authMethod || "email"; // "email" or "google"
     const googleToken = body.googleToken || "";
@@ -151,6 +168,10 @@ module.exports = async (req, res) => {
     if (!isValidEmail(email)) {
       return res.status(400).json({ ok: false, error: "Valid email is required." });
     }
+    const storageError = getPersistentStoreSetupError();
+    if (process.env.VERCEL && storageError) {
+      return res.status(503).json({ ok: false, error: storageError });
+    }
 
     // Handle Google OAuth authentication
     if (authMethod === "google" && googleToken && googleId) {
@@ -158,7 +179,7 @@ module.exports = async (req, res) => {
       // In production, you should verify the token with Google's API
       
       // Check if user has verified account
-      let verifiedAccount = verifiedAccounts.get(email);
+      let verifiedAccount = await getVerifiedAccount(email);
       
       // Auto-create/update account for Google users
       if (!verifiedAccount) {
@@ -170,16 +191,17 @@ module.exports = async (req, res) => {
           createdAt: Date.now(),
           authMethod: "google"
         };
-        verifiedAccounts.set(email, verifiedAccount);
+        await setVerifiedAccount(email, verifiedAccount);
       } else {
         // Update existing account with Google info
         verifiedAccount.googleId = googleId;
         verifiedAccount.authMethod = "google";
         verifiedAccount.verified = true;
+        await setVerifiedAccount(email, verifiedAccount);
       }
 
       const token = base64Url(`${email}:${Date.now()}:${Math.random()}:google`);
-      return res.status(200).json({ ok: true, token, email, expiresIn: 8 * 60 * 60, method: "google" });
+      return res.status(200).json({ ok: true, token, email, expiresIn: 8 * 60 * 60, method: "google", storage: getStorageMode() });
     }
 
     // Handle email/password authentication
@@ -188,12 +210,11 @@ module.exports = async (req, res) => {
     }
 
     // Check if user has verified account (new email verification system)
-    const verifiedAccount = verifiedAccounts.get(email);
+    const verifiedAccount = await getVerifiedAccount(email);
     if (verifiedAccount && verifiedAccount.verified) {
-      const passwordHash = hashPassword(password);
-      if (passwordHash === verifiedAccount.password) {
+      if (verifyPassword(password, verifiedAccount.password)) {
         const token = base64Url(`${email}:${Date.now()}:${Math.random()}`);
-        return res.status(200).json({ ok: true, token, email, expiresIn: 8 * 60 * 60 });
+        return res.status(200).json({ ok: true, token, email, expiresIn: 8 * 60 * 60, storage: getStorageMode() });
       }
       // Wrong password for verified account
       return res.status(401).json({ ok: false, error: "Invalid credentials." });
@@ -204,7 +225,8 @@ module.exports = async (req, res) => {
     const authPassword = process.env.HRH_AUTH_PASSWORD || "";
 
     // Check if user is in legacy approved accounts
-    const isApproved = approvedAccounts.has(email) && approvedAccounts.get(email).approved === true;
+    const approvedAccount = await getApprovedAccount(email);
+    const isApproved = approvedAccount?.approved === true;
     const isConfigured = authPassword && (allowed.length > 0 || isApproved);
 
     if (!authPassword || !isConfigured) {
@@ -222,7 +244,7 @@ module.exports = async (req, res) => {
     }
 
     const token = base64Url(`${email}:${Date.now()}:${Math.random()}`);
-    return res.status(200).json({ ok: true, token, email, expiresIn: 8 * 60 * 60 });
+    return res.status(200).json({ ok: true, token, email, expiresIn: 8 * 60 * 60, storage: getStorageMode() });
   } catch (e) {
     const status = e.statusCode || 500;
     return res.status(status).json({ ok: false, error: e.message || "Server error" });
