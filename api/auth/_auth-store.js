@@ -27,7 +27,7 @@ function isPersistentStoreConfigured() {
 
 function getPersistentStoreSetupError() {
   if (isPersistentStoreConfigured()) return "";
-  return "Authentication storage is not configured. Connect Vercel KV to this project and add KV_REST_API_URL plus KV_REST_API_TOKEN before using account creation or sign-in.";
+  return "Authentication storage is not configured. Connect Vercel KV to this project and add either KV_REST_API_URL plus KV_REST_API_TOKEN or UPSTASH_REDIS_REST_URL plus UPSTASH_REDIS_REST_TOKEN before using account creation or sign-in.";
 }
 
 async function runKvCommand(command, ...args) {

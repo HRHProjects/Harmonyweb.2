@@ -108,6 +108,7 @@ function escapeHtml(str) {
 }
 
 function generateVerificationCode() {
+  // Upper bound is exclusive, so this produces values from 100000 through 999999.
   return crypto.randomInt(100000, 1000000).toString();
 }
 
