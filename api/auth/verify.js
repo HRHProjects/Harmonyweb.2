@@ -11,13 +11,19 @@
  *   HRH_ALLOWED_ORIGINS     (optional, comma-separated)
  */
 
+const {
+  deleteVerification,
+  getPersistentStoreSetupError,
+  getStorageMode,
+  getVerification,
+  getVerifiedAccount,
+  normalizeEmail,
+  setVerifiedAccount
+} = require("./_auth-store");
+
 const RATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const RATE_MAX = 30;
 const state = globalThis.__HRH_VERIFY_RATE_STATE__ || (globalThis.__HRH_VERIFY_RATE_STATE__ = new Map());
-
-// Shared storage from register.js
-const verificationCodes = globalThis.__HRH_VERIFICATION_CODES__ || (globalThis.__HRH_VERIFICATION_CODES__ = new Map());
-const verifiedAccounts = globalThis.__HRH_VERIFIED_ACCOUNTS__ || (globalThis.__HRH_VERIFIED_ACCOUNTS__ = new Map());
 
 function now() { return Date.now(); }
 
@@ -114,7 +120,7 @@ module.exports = async (req, res) => {
     rateLimitOrThrow(req);
 
     const body = await getJsonBody(req);
-    const email = (body.email || "").toString().trim().toLowerCase();
+    const email = normalizeEmail(body.email);
     const code = (body.code || "").toString().trim();
 
     if (!isValidEmail(email)) {
@@ -124,18 +130,24 @@ module.exports = async (req, res) => {
     if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
       return res.status(400).json({ ok: false, error: "Valid 6-digit code is required." });
     }
+    const storageError = getPersistentStoreSetupError();
+    if (process.env.VERCEL && storageError) {
+      return res.status(503).json({ ok: false, error: storageError });
+    }
 
     // Check if already verified
-    if (verifiedAccounts.has(email)) {
+    const existingAccount = await getVerifiedAccount(email);
+    if (existingAccount?.verified) {
       return res.status(200).json({
         ok: true,
         verified: true,
+        storage: getStorageMode(),
         message: "Email already verified. You can now sign in."
       });
     }
 
     // Check verification code
-    const verification = verificationCodes.get(email);
+    const verification = await getVerification(email);
 
     if (!verification) {
       return res.status(400).json({
@@ -146,7 +158,7 @@ module.exports = async (req, res) => {
 
     // Check if code expired
     if (Date.now() > verification.expiresAt) {
-      verificationCodes.delete(email);
+      await deleteVerification(email);
       return res.status(400).json({
         ok: false,
         error: "Verification code expired. Please register again."
@@ -162,20 +174,23 @@ module.exports = async (req, res) => {
     }
 
     // Code is valid - mark account as verified
-    verifiedAccounts.set(email, {
+    await setVerifiedAccount(email, {
+      email,
       verified: true,
       verifiedAt: new Date().toISOString(),
       fullName: verification.fullName,
       password: verification.password,
-      phone: verification.phone
+      phone: verification.phone,
+      authMethod: "email"
     });
 
     // Remove verification code
-    verificationCodes.delete(email);
+    await deleteVerification(email);
 
     return res.status(200).json({
       ok: true,
       verified: true,
+      storage: getStorageMode(),
       message: "Email verified successfully! You can now sign in."
     });
   } catch (e) {

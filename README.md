@@ -35,6 +35,7 @@ Serverless functions are located at:
 - `api/contact.js`
 - `api/auth/register.js` (account request intake)
 - `api/auth/login.js` (minimal login placeholder)
+- `api/auth/verify.js` (email verification)
 
 Set these Environment Variables in Vercel (Project -> Settings -> Environment Variables):
 - `RESEND_API_KEY` (required)
@@ -42,6 +43,10 @@ Set these Environment Variables in Vercel (Project -> Settings -> Environment Va
 - `HRH_TO_EMAIL` (optional, defaults to admin@harmonyresourcehub.ca)
 - `HRH_ALLOWED_ORIGINS` (optional, comma-separated origins)
 - `HRH_SUBJECT_PREFIX` (optional)
+
+For account creation + sign-in to persist correctly across Vercel serverless functions, connect **Vercel KV** and expose:
+- `KV_REST_API_URL` (required for auth persistence)
+- `KV_REST_API_TOKEN` (required for auth persistence)
 
 Auth placeholder variables (for `api/auth/login.js`):
 - `HRH_AUTH_PASSWORD` (required for login)

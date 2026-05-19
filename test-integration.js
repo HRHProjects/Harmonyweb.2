@@ -265,6 +265,128 @@ async function testApiModules() {
   }
 }
 
+function createMockReq(method, body = {}, extras = {}) {
+  return {
+    method,
+    headers: extras.headers || {},
+    query: extras.query || {},
+    body,
+    socket: { remoteAddress: '127.0.0.1' },
+    async *[Symbol.asyncIterator]() {}
+  };
+}
+
+function createMockRes() {
+  return {
+    headers: {},
+    statusCode: 200,
+    body: undefined,
+    setHeader(key, value) {
+      this.headers[key] = value;
+    },
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(data) {
+      this.body = data;
+      return this;
+    },
+    send(data) {
+      this.body = data;
+      return this;
+    },
+    end() {
+      return this;
+    }
+  };
+}
+
+async function testAuthFlow() {
+  section('Authentication Flow Tests');
+
+  const registerHandler = require('./api/auth/register');
+  const verifyHandler = require('./api/auth/verify');
+  const loginHandler = require('./api/auth/login');
+  const authStore = require('./api/auth/_auth-store');
+
+  authStore.clearMemoryStoreForTests();
+
+  const originalFetch = global.fetch;
+  const originalResendKey = process.env.RESEND_API_KEY;
+  const originalVercel = process.env.VERCEL;
+
+  process.env.RESEND_API_KEY = 'test-resend-key';
+  delete process.env.VERCEL;
+
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({ id: 'email_123' }),
+    text: async () => 'ok'
+  });
+
+  try {
+    const registerReq = createMockReq('POST', {
+      fullName: 'Test User',
+      email: 'test@example.com',
+      phone: '780-555-0101',
+      password: 'TestPass123!'
+    });
+    const registerRes = createMockRes();
+    await registerHandler(registerReq, registerRes);
+
+    if (registerRes.statusCode === 200 && registerRes.body?.ok && registerRes.body?.requiresVerification) {
+      pass('Register API: creates pending account and returns verification step');
+    } else {
+      fail('Register API: registration flow failed', JSON.stringify(registerRes.body));
+      return;
+    }
+
+    const storedVerification = await authStore.getVerification('test@example.com');
+    if (storedVerification?.code && storedVerification.password?.startsWith('scrypt:')) {
+      pass('Register API: stores verification code and scrypt password hash');
+    } else {
+      fail('Register API: verification details were not persisted correctly');
+      return;
+    }
+
+    const verifyReq = createMockReq('POST', {
+      email: 'test@example.com',
+      code: storedVerification.code
+    });
+    const verifyRes = createMockRes();
+    await verifyHandler(verifyReq, verifyRes);
+
+    if (verifyRes.statusCode === 200 && verifyRes.body?.verified) {
+      pass('Verify API: activates the account with the emailed code');
+    } else {
+      fail('Verify API: verification flow failed', JSON.stringify(verifyRes.body));
+      return;
+    }
+
+    const loginReq = createMockReq('POST', {
+      email: 'test@example.com',
+      password: 'TestPass123!'
+    });
+    const loginRes = createMockRes();
+    await loginHandler(loginReq, loginRes);
+
+    if (loginRes.statusCode === 200 && loginRes.body?.ok && loginRes.body?.token) {
+      pass('Login API: signs in with the newly verified account');
+    } else {
+      fail('Login API: sign-in after verification failed', JSON.stringify(loginRes.body));
+    }
+  } finally {
+    authStore.clearMemoryStoreForTests();
+    global.fetch = originalFetch;
+    if (originalResendKey === undefined) delete process.env.RESEND_API_KEY;
+    else process.env.RESEND_API_KEY = originalResendKey;
+    if (originalVercel === undefined) delete process.env.VERCEL;
+    else process.env.VERCEL = originalVercel;
+  }
+}
+
 async function runAllTests() {
   console.log('🧪 Running Integration Tests for Harmony Resource Hub\n');
 
@@ -273,6 +395,7 @@ async function runAllTests() {
   await testErrorHandling();
   await testDataSanitization();
   await testApiModules();
+  await testAuthFlow();
 
   // Summary
   section('Test Summary');

@@ -16,12 +16,15 @@
  *   HRH_SITE_URL            (default: https://www.harmonyresourcehub.ca)
  */
 
+const {
+  getPersistentStoreSetupError,
+  normalizeEmail,
+  setApprovedAccount
+} = require("./_auth-store");
+
 const RATE_WINDOW_MS = 60 * 1000; // 1 minute
 const RATE_MAX = 20;
 const state = globalThis.__HRH_APPROVE_RATE_STATE__ || (globalThis.__HRH_APPROVE_RATE_STATE__ = new Map());
-
-// In-memory approval storage (for demo - replace with database in production)
-const approvedAccounts = globalThis.__HRH_APPROVED_ACCOUNTS__ || (globalThis.__HRH_APPROVED_ACCOUNTS__ = new Map());
 
 function now() { return Date.now(); }
 
@@ -153,8 +156,13 @@ module.exports = async (req, res) => {
       const body = req.body && typeof req.body === "object" ? req.body : {};
       return body;
     })();
+    const normalizedEmail = normalizeEmail(email);
+    const storageError = getPersistentStoreSetupError();
+    if (process.env.VERCEL && storageError) {
+      return res.status(503).json({ ok: false, error: storageError });
+    }
 
-    if (!token || !email) {
+    if (!token || !normalizedEmail) {
       if (req.method === "GET") {
         return res.status(400).send(`
           <!DOCTYPE html>
@@ -219,11 +227,8 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Store approval/rejection status
-    const accountKey = `${email}:${token}`;
-
     if (approvalAction === "approve") {
-      approvedAccounts.set(email, { 
+      await setApprovedAccount(normalizedEmail, { 
         approved: true, 
         token, 
         approvedAt: new Date().toISOString(),
@@ -234,7 +239,7 @@ module.exports = async (req, res) => {
       let emailError = null;
       try {
         await sendViaResend({
-          to: email,
+          to: normalizedEmail,
           subject: "Your Harmony Resource Hub Account Has Been Approved!",
           text: `Your account has been approved! You can now log in at https://www.harmonyresourcehub.ca`,
           html: `
@@ -257,7 +262,7 @@ module.exports = async (req, res) => {
                   <h1>Account Approved!</h1>
                 </div>
                 <div class="content">
-                  <p>Hello ${escapeHtml(email)},</p>
+                  <p>Hello ${escapeHtml(normalizedEmail)},</p>
                   <p>Great news! Your account has been approved by the Harmony Resource Hub team.</p>
                   <p>You can now log in and access all the features of your personalized dashboard.</p>
                   <a href="https://www.harmonyresourcehub.ca/signin.html" class="button">Log In Now</a>
@@ -284,7 +289,7 @@ module.exports = async (req, res) => {
         // Don't fail the approval if email fails
       }
 
-      const notice = emailError ? `<p class="mt-2 text-sm text-red-500">Failed to send confirmation email: ${escapeHtml(emailError)}</p>` : `<p class="mt-2 text-sm text-slate-500">An approval confirmation email has been sent to ${escapeHtml(email)}</p>`;
+      const notice = emailError ? `<p class="mt-2 text-sm text-red-500">Failed to send confirmation email: ${escapeHtml(emailError)}</p>` : `<p class="mt-2 text-sm text-slate-500">An approval confirmation email has been sent to ${escapeHtml(normalizedEmail)}</p>`;
 
       if (req.method === "GET") {
         return res.status(200).send(`
@@ -320,7 +325,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({ ok: true, message: "Account approved", emailError });
     } else {
       // Reject
-      approvedAccounts.set(email, { 
+      await setApprovedAccount(normalizedEmail, { 
         approved: false, 
         rejected: true,
         token,
@@ -331,7 +336,7 @@ module.exports = async (req, res) => {
       let emailError = null;
       try {
         await sendViaResend({
-          to: email,
+          to: normalizedEmail,
           subject: "Update on Your Harmony Resource Hub Application",
           text: `Your account request could not be approved at this time. Please contact us for more information.`,
           html: `
@@ -354,7 +359,7 @@ module.exports = async (req, res) => {
                   <h1>Account Request Update</h1>
                 </div>
                 <div class="content">
-                  <p>Hello ${escapeHtml(email)},</p>
+                  <p>Hello ${escapeHtml(normalizedEmail)},</p>
                   <p>Thank you for your interest in Harmony Resource Hub. Unfortunately, your account request could not be approved at this time.</p>
                   <p>Please contact our support team for more information about your application.</p>
                   <a href="mailto:admin@harmonyresourcehub.ca" class="button">Contact Support</a>
