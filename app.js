@@ -488,6 +488,7 @@
             <nav class="hidden lg:flex items-center gap-2 text-sm" aria-label="Primary navigation">
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/">Home</a>
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/services">Services</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/press/craftywand.html">Press</a>
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/booking">Booking</a>
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/contact">Contact</a>
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/signin">Sign in</a>
@@ -502,6 +503,7 @@
             <div class="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-soft">
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/">Home</a>
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/services">Services</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/press/craftywand.html">Press</a>
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/booking">Booking</a>
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/contact">Contact</a>
               <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/signin">Sign in</a>
