@@ -455,6 +455,63 @@
     });
   }
 
+  function injectSharedNavigation() {
+    const mount = qs("[data-site-navigation]");
+    if (!mount) return;
+
+    const isPortal = document.body.hasAttribute("data-portal");
+    const desktopActions = isPortal
+      ? `<div class="hidden lg:flex items-center gap-3">
+          <span class="text-sm text-slate-600">Welcome, <span class="font-medium" data-portal-email>Client</span></span>
+          <button class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" type="button" data-portal-logout>Sign out</button>
+        </div>`
+      : `<div class="hidden lg:flex items-center gap-3">
+          <a class="text-sm font-medium text-slate-700 hover:underline" data-phone-tel href="#"><span class="hidden xl:inline">Call </span><span data-phone-display>780-531-4294</span></a>
+          <a class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-soft" href="/booking">Request an appointment</a>
+        </div>`;
+    const mobileActions = isPortal
+      ? `<span class="block text-sm text-slate-600 px-3 py-2">Welcome, <span class="font-medium" data-portal-email>Client</span></span>
+          <button class="w-full text-left rounded-xl bg-slate-900 px-3 py-2 text-white hover:bg-slate-800 text-sm font-medium" type="button" data-portal-logout>Sign out</button>`
+      : `<a class="rounded-xl bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" href="/booking">Request an appointment</a>`;
+
+    mount.innerHTML = `
+      <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="flex items-center justify-between py-3">
+            <a href="/" class="flex flex-col items-start gap-1">
+              <span class="logo-badge inline-flex items-center justify-center"><img src="/art/hrh-logo.png" alt="Harmony Resource Hub logo" class="logo-img object-contain"></span>
+              <div class="leading-tight">
+                <div class="text-xs font-semibold tracking-tight text-slate-600" data-brand-name>Harmony Resource Hub</div>
+                <div class="text-[10px] text-slate-400">${isPortal ? "Client Portal" : "Owned & operated by social workers"}</div>
+              </div>
+            </a>
+            <nav class="hidden lg:flex items-center gap-2 text-sm" aria-label="Primary navigation">
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/">Home</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/services">Services</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/booking">Booking</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/contact">Contact</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/signin">Sign in</a>
+            </nav>
+            ${desktopActions}
+            <button type="button" class="lg:hidden inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700" data-mobile-menu-button aria-expanded="false" aria-controls="mobileNav">
+              <span class="sr-only">Open menu</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5"><path fill="currentColor" d="M4 6h16v2H4zM4 11h16v2H4zM4 16h16v2H4z"/></svg>
+            </button>
+          </div>
+          <div id="mobileNav" class="hidden pb-4" data-mobile-menu-panel>
+            <div class="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-soft">
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/">Home</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/services">Services</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/booking">Booking</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/contact">Contact</a>
+              <a class="rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50" href="/signin">Sign in</a>
+              ${mobileActions}
+            </div>
+          </div>
+        </div>
+      </header>`;
+  }
+
   function highlightActiveNav() {
     const links = qsa("header nav a, #mobileNav a");
     if (!links.length) return;
@@ -845,25 +902,24 @@
     if (hasSession || isDemoMode) {
       gate?.classList.add("hidden");
       main?.classList.remove("hidden");
-      const emailEl = qs("[data-portal-email]");
-      if (emailEl) {
+      qsa("[data-portal-email]").forEach(emailEl => {
         if (isDemoMode) {
           emailEl.textContent = "Demo User (Preview Mode)";
         } else if (email) {
           emailEl.textContent = email;
         }
-      }
+      });
     } else {
       gate?.classList.remove("hidden");
       main?.classList.add("hidden");
     }
 
-    qs("[data-portal-logout]")?.addEventListener("click", () => {
+    qsa("[data-portal-logout]").forEach(button => button.addEventListener("click", () => {
       localStorage.removeItem("hrh_auth_token");
       localStorage.removeItem("hrh_auth_session");
       localStorage.removeItem("hrh_auth_email");
       window.location.href = signinUrl;
-    });
+    }));
 
     const fileInput = qs("#portalFileInput");
     const fileList = qs("#portalFileList");
@@ -1359,6 +1415,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     try {
+      injectSharedNavigation();
       injectCommon();
       setupMobileMenu();
       highlightActiveNav();
